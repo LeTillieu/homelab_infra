@@ -14,6 +14,7 @@ jobs:
               env:
                 GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud-key.json
             - name: Apply terraform
+              working-directory: ./terraform
               run:  terraform apply -auto-approve
               env: 
                 TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
