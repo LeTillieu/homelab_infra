@@ -13,6 +13,16 @@ jobs:
               run: echo "${{ secrets.GCP_CONNECTION_FILE }}" > $HOME/gcloud-key.json
               env:
                 GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud-key.json
+            - name: init terraform
+              working-directory: ./terraform
+              run:  terraform init
+              env: 
+                TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
+                TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
+                TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+                TF_VAR_roxmox_ip: ${{secrets.PROXMOX_IP}}
+                TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
+            
             - name: Apply terraform
               working-directory: ./terraform
               run:  terraform apply -auto-approve
