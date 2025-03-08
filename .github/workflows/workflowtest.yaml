@@ -24,7 +24,7 @@ jobs:
                 TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
                 TF_VAR_roxmox_ip: ${{secrets.PROXMOX_IP}}
                 TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
-                GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud-key.json
+                GOOGLE_APPLICATION_CREDENTIALS: "$HOME/gcloud-key.json"
             
             - name: Apply terraform
               working-directory: ./terraform
