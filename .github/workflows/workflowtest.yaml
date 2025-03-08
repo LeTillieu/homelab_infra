@@ -10,17 +10,11 @@ jobs:
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
 
-            - name: Set up Google Cloud SDK
-              uses: google-github-actions/setup-gcloud@v2
-              with:
-                version: 'latest'
-
             - name: Authenticate to Google Cloud
               run: |
                 echo "${{ secrets.GCP_CONNECTION_FILE }}" > $HOME/gcloud-key.json
                 export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-key.json
-              env:
-                GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud-key.json
+
             - name: init terraform
               working-directory: ./terraform
               run:  terraform init
