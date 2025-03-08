@@ -5,4 +5,4 @@ jobs:
         runs-on: self-hosted
         steps:
             - run: echo "first echo"
-            - run: echo "second line with variable ${{secrets.SECRET_TEST}}"
+            - run: echo "second line with variable ${{vars.TEST_VAR}}"
