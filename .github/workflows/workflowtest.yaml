@@ -9,8 +9,6 @@ jobs:
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
-              with:
-                terraform_version: 1.10.9
             - name: Authenticate to Google Cloud
               run: echo "${{ secrets.GCP_CONNECTION_FILE }}" > $HOME/gcloud-key.json
               env:
