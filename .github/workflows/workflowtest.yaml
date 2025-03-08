@@ -1,0 +1,8 @@
+name: Test GitHub
+on: [push]
+jobs:
+    Explore-GitHub-Actions:
+        runs-on: self-hosted
+        steps:
+            - run: echo "first echo"
+            - run: echo "second line with variable ${{secrets.SECRET_TEST}}"
