@@ -4,5 +4,19 @@ jobs:
     Explore-GitHub-Actions:
         runs-on: self-hosted
         steps:
-            - run: echo "first echo"
-            - run: echo "second line with variable ${{vars.TEST_VAR}}"
+            - name: Checkout repository
+              uses: actions/@checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.6.0
+            
+            - name: Apply terraform
+              run:  terraform apply -auto-approve
+              env: 
+                TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
+                TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
+                TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+                TF_VAR_roxmox_ip: ${{secrets.PROXMOX_IP}}
+                TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
