@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = var.gcp_bucket_name
+    bucket = "homelab_terraform"
     prefix = "terraform/state"
   }
   required_providers {

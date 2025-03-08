@@ -1,9 +1,3 @@
-variable "gcp_bucket_name" {
-  description = "Cloud Storage bucket name"
-  type        = string
-  sensitive   = false
-}
-
 variable "terraform_private_key" {
   description = "Private key to access proxmox server"
   type        = string
