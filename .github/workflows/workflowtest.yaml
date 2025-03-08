@@ -9,6 +9,12 @@ jobs:
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
+
+            - name: Set up Google Cloud SDK
+              uses: google-github-actions/setup-gcloud@v3
+              with:
+                version: 'latest'
+
             - name: Authenticate to Google Cloud
               run: echo "${{ secrets.GCP_CONNECTION_FILE }}" > $HOME/gcloud-key.json
               env:
