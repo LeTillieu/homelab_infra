@@ -8,10 +8,13 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v2
+              uses: hashicorp/setup-terraform@v3
               with:
-                terraform_version: 1.6.0
-            
+                terraform_version: 1.10.9
+            - name: Authenticate to Google Cloud
+              run: echo "${{ secrets.GCP_CONNECTION_FILE }}" > $HOME/gcloud-key.json
+              env:
+                GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud-key.json
             - name: Apply terraform
               run:  terraform apply -auto-approve
               env: 
