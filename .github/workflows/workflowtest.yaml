@@ -37,21 +37,16 @@ jobs:
     Install_k3s:
       runs-on: self-hosted
       # needs: [Deploy_VMs]
+      container: 
+        image: "debian:12"
+        options: --user root
+      
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Set up Python 3.11.2
-          uses: actions/setup-python@v4
-          with:
-            python-version: ">=3.11"
-
-        - name: Lint ansible code
-          uses: ansible/ansible-lint@main 
-          with: 
-            setup_python: false
-            working_directory: ./ansible
-            requierements_file: ./ansible/requirements.yaml
+        - name: Installing ansible
+          run:  apt-get install -y ansible
         
         - name: Set private Key file
           working-directory: ./ansible
