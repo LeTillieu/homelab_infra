@@ -38,15 +38,23 @@ jobs:
       runs-on: self-hosted
       # needs: [Deploy_VMs]
       container: 
-        image: "debian:12"
+        image: "ubuntu:22.04"
         options: --user root
       
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
 
+        - name: Installing python
+          uses: actions/setup-python@v5
+          with:
+            python-version: '>=3.13' 
+
         - name: Installing ansible
-          run:  apt-get install -y ansible
+          uses: ansible/ansible-lint@main
+          with: 
+            setup_python: false
+            working_directory: ./ansible
         
         - name: Set private Key file
           working-directory: ./ansible
