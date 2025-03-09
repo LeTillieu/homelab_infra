@@ -14,10 +14,10 @@ terraform {
 provider "proxmox" {
   endpoint = "https://${var.proxmox_ip}:${var.proxmox_port}"
   insecure = true
-  api_token = var.proxmox_api_token
+  api_token = "terraform-prov@pve!terraform=${var.proxmox_api_token}"
   ssh {
     username = "terraform-prov"
-    private_key = "terraform-prov@pve!terraform=${var.terraform_private_key}"
+    private_key = "${var.terraform_private_key}"
     node  {
       name = "proxmox"
       address = var.proxmox_ip
