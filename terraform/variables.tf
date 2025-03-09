@@ -21,3 +21,15 @@ variable "proxmox_port" {
   type        = string
   sensitive   = true
 }
+
+variable "debian_url" {
+  description = "Proxmox port"
+  type        = string
+  sensitive   = false
+}
+
+variable "debian_sha512" {
+  description = "Proxmox port"
+  type        = string
+  sensitive   = false
+}

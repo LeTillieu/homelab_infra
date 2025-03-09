@@ -24,3 +24,14 @@ provider "proxmox" {
     }
   }
 }
+
+resource "proxmox_virtual_environment_download_file" "debian-12-generic-amd64-daily-20250214-2023" {
+  content_type       = "iso"
+  datastore_id       = "local"
+  file_name          = "debian-12-generic-amd64-daily-20250214-2023.img"
+  node_name          = "proxmox"
+  url                = var.debian_url
+  checksum           = var.debian_sha512
+  checksum_algorithm = "sha512"
+  overwrite          = true
+}
