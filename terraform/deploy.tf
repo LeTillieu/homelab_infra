@@ -35,3 +35,50 @@ resource "proxmox_virtual_environment_download_file" "debian-12-generic-amd64-da
   checksum_algorithm = "sha512"
   overwrite          = true
 }
+
+
+# Create control plane VM
+resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
+  node_name = "proxmox"
+  count = 3
+  vm_id = 200+count.index
+  name = "k8s-ctrlplane-terraform-${count.index}"
+  description = "K8sctrlplane managed by terraform"
+  tags = ["terraform", "debian", "k3s_server","k3s"]
+  stop_on_destroy = true
+  on_boot = false
+  started = true
+  keyboard_layout = "fr"
+
+   cpu {
+    cores        = 1
+    type         = "x86-64-v2-AES"
+  }
+
+  memory {
+    dedicated = 2048
+  }
+
+  disk {
+    datastore_id = "local-lvm"
+    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
+    interface    = "scsi0"
+    size         = 32
+  }
+  
+  serial_device {}
+
+  network_device {
+    model = "virtio"
+    bridge = "vmbr0"
+    mac_address = format("02:42:ac:11:00:%02x",count.index+1)
+  }
+
+  initialization {
+    user_account {
+      keys = [var.terraform_allowed_key]
+      username = "terraform"
+      password = "terraform"
+    }
+  }
+}

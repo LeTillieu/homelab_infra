@@ -23,13 +23,18 @@ variable "proxmox_port" {
 }
 
 variable "debian_url" {
-  description = "Proxmox port"
+  description = "Debian 12 image URL"
   type        = string
   sensitive   = false
 }
 
 variable "debian_sha512" {
-  description = "Proxmox port"
+  description = "Debian 12 checksum"
   type        = string
   sensitive   = false
+}
+variable "terraform_allowed_key" {
+  description = "Public key to allow ssh connection from my computer"
+  type        = string
+  sensitive   = true
 }

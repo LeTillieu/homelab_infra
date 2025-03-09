@@ -32,4 +32,5 @@ jobs:
                 TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
                 TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
                 TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
+                TF_VAR_terraform_allowed_key: ${{secrets.TERRAFORM_ALLOWED_KEY}}
                 GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
