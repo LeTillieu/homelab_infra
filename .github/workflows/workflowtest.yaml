@@ -36,6 +36,7 @@ jobs:
                 GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
     Install_k3s:
       runs-on: self-hosted
+      needs: [Deploy_VMs]
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4

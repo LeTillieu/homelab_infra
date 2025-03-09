@@ -33,7 +33,7 @@ variable "debian_sha512" {
   type        = string
   sensitive   = false
 }
-variable "terraform_allowed_key" {
+variable "terraform_allowed_key_public" {
   description = "Public key to allow ssh connection from my computer"
   type        = string
   sensitive   = true
