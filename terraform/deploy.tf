@@ -78,7 +78,94 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
     user_account {
       keys = [var.terraform_allowed_key]
       username = "terraform"
-      password = "terraform"
+    }
+  }
+}
+
+
+# Create nodes
+resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
+  count = 4
+  node_name = "proxmox"
+  vm_id = 210+count.index
+  name = "k8s-node-terraform-${count.index}"
+  description = "K8s node managed by terraform"
+  tags = ["terraform", "debian", "k3s_node","k3s"]
+  stop_on_destroy = true
+  on_boot = false
+  started = true
+  keyboard_layout = "fr"
+
+  cpu {
+    cores        = 1
+    type         = "x86-64-v2-AES"
+  }
+
+  memory {
+    dedicated = 1024
+  }
+
+  disk {
+    datastore_id = "local-lvm"
+    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
+    interface    = "scsi0"
+    size         = 32
+  }
+
+  network_device {
+    model = "virtio"
+    bridge = "vmbr0"
+    mac_address = format("02:42:ac:11:01:%02x",count.index+1)
+  }
+  serial_device {}
+
+  initialization {
+    user_account {
+      keys = [var.terraform_allowed_key]
+      username = "terraform"
+    }
+  }
+}
+
+
+resource "proxmox_virtual_environment_vm" "postgres-vm" {
+  node_name = "proxmox"
+  vm_id = 231
+  name = "postgres-terraform"
+  description = "K8s node managed by terraform"
+  tags = ["terraform", "debian", "postgres","db"]
+  stop_on_destroy = true
+  on_boot = false
+  started = true
+  keyboard_layout = "fr"
+
+  cpu {
+    cores        = 2
+    type         = "x86-64-v2-AES"
+  }
+
+  memory {
+    dedicated = 2048
+  }
+
+  disk {
+    datastore_id = "local-lvm"
+    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
+    interface    = "scsi0"
+    size         = 32
+  }
+
+  network_device {
+    model = "virtio"
+    bridge = "vmbr0"
+    mac_address = "02:42:ac:11:02:01"
+  }
+  serial_device {}
+
+  initialization {
+    user_account {
+      keys = [var.terraform_allowed_key]
+      username = "terraform"
     }
   }
 }
