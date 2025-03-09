@@ -17,7 +17,7 @@ provider "proxmox" {
   api_token = var.proxmox_api_token
   ssh {
     username = "terraform-prov"
-    private_key = "terraform-prov@pve!terraform=${terraform_private_key}"
+    private_key = "terraform-prov@pve!terraform=${var.terraform_private_key}"
     node  {
       name = "proxmox"
       address = var.proxmox_ip
