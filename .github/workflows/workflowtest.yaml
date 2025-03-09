@@ -51,8 +51,10 @@ jobs:
         - name: Installing ansible lint
           uses: ansible/ansible-lint@main
           with: 
-            setup_python: true
-            working_directory: ./ansible/
+            args: ""
+            setup_python: "true"
+            working_directory: "./ansible/"
+            requirements_file: ""
         
         - name: Set private Key file
           working-directory: ./ansible
