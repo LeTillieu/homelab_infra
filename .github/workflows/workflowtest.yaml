@@ -35,6 +35,7 @@ jobs:
     #             TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
     #             GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
     Install_k3s:
+      name: Installaling ansible
       runs-on: self-hosted
       # needs: [Deploy_VMs]
       container: 
