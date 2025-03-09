@@ -53,7 +53,7 @@ jobs:
           with: 
             args: ""
             setup_python: "true"
-            working_directory: "./ansible/"
+            working_directory: ""
             requirements_file: ""
         
         - name: Set private Key file
