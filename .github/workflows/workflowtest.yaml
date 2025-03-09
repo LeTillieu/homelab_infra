@@ -50,6 +50,9 @@ jobs:
           with:
             python-version: '>=3.13' 
 
+        - name: Installing git
+          run: apt install git
+
         - name: Installing ansible
           uses: ansible/ansible-lint@main
           with: 
