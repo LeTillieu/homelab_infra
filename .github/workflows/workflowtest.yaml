@@ -30,6 +30,6 @@ jobs:
                 TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
                 TF_VAR_proxmox_ip: ${{secrets.PROXMOX_IP}}
                 TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
-                TF_VAR_debian_url: ${{secrets.DEBIAN_URL}}
-                TF_VAR_debian_sha512: ${{secrets.DEBIAN_SHA512}}
+                TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
+                TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
                 GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
