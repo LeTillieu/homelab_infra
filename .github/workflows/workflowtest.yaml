@@ -38,7 +38,7 @@ jobs:
       runs-on: self-hosted
       # needs: [Deploy_VMs]
       container: 
-        image: "ubuntu:22.04"
+        image: "ubuntu:24.04"
         options: --user root
       
       steps:
@@ -51,13 +51,13 @@ jobs:
             python-version: '>=3.13' 
 
         - name: Installing git
-          run: apt update && apt install -y git
+          run: apt update && apt install -y git && ls -la
 
-        - name: Installing ansible
+        - name: Installing ansible lint
           uses: ansible/ansible-lint@main
           with: 
-            setup_python: false
-            working_directory: ./ansible
+            setup_python: true
+            working_directory: ./ansible/
         
         - name: Set private Key file
           working-directory: ./ansible
