@@ -43,14 +43,13 @@ jobs:
         options: --user root
       
       steps:
+        - name: Installing git
+          run: apt update && apt install -y git && ls -la && git status
+          
         - name: Checkout repository
           uses: actions/checkout@v4
           with:
             fetch-depth: 0
-
-        - name: Installing git
-          run: apt update && apt install -y git && ls -la && git status
-
         - name: Installing ansible lint
           uses: ansible/ansible-lint@main
           with: 
