@@ -17,7 +17,7 @@ provider "proxmox" {
   api_token = var.proxmox_api_token
   ssh {
     username = "terraform-prov"
-    private_key = var.terraform_private_key
+    private_key = "terraform-prov@pve!terraform=${terraform_private_key}"
     node  {
       name = "proxmox"
       address = var.proxmox_ip
@@ -76,7 +76,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
   initialization {
     user_account {
-      keys = [var.terraform_allowed_key]
+      keys = [var.terraform_allowed_key_public]
       username = "terraform"
     }
   }
@@ -121,7 +121,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
 
   initialization {
     user_account {
-      keys = [var.terraform_allowed_key]
+      keys = [var.terraform_allowed_key_public]
       username = "terraform"
     }
   }
@@ -164,7 +164,7 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
 
   initialization {
     user_account {
-      keys = [var.terraform_allowed_key]
+      keys = [var.terraform_allowed_key_public]
       username = "terraform"
     }
   }

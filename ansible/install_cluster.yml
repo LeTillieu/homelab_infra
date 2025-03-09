@@ -1,0 +1,72 @@
+---
+
+- name: Installing k3s
+  hosts: k3s
+  tasks:
+    - name: Downloading k3s install script
+      ansible.builtin.get_url:
+        mode: u=rwx,g=rx,o=
+        dest: /tmp/install_k3s.sh
+        url: https://get.k3s.io
+
+- name: Installing first master
+  hosts: "{{ groups['k3s_server'][0] }}"
+  tasks:
+    - name: Installing k3s
+      changed_when: false # to improve
+      ansible.builtin.command:
+        cmd: /tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute
+      environment:
+        INSTALL_K3S_EXEC: "server"
+        K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
+        K3S_CLUSTER_INIT: true
+
+
+- name: Installing masters
+  hosts: "{{ groups['k3s_server'][1:] }}"
+  gather_facts: true
+  tasks:
+    - name: Installing k3s
+      changed_when: false #to improve
+      ansible.builtin.command:
+        cmd: /tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute
+      environment:
+        INSTALL_K3S_EXEC: "server"
+        K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
+        K3S_URL: "{{  'https://' + hostvars[groups['k3s_server'][0]]['ansible_default_ipv4']['address'] + ':6443' }}"
+
+- name: Installing agents
+  hosts: k3s_node
+  gather_facts: true
+  tasks:
+    - name: Installing k3s
+      changed_when: false #to improve
+      ansible.builtin.command:
+        cmd: /tmp/install_k3s.sh
+      environment:
+        INSTALL_K3S_EXEC: "agent"
+        K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
+        K3S_URL: "{{  'https://' + hostvars[groups['k3s_server'][0]]['ansible_default_ipv4']['address'] + ':6443' }}"
+    - name: Installing nfs-common
+      become: true
+      ansible.builtin.package:
+        name: nfs-common
+        state: present
+- name: Installing k9s
+  hosts: 'k3s_server'
+  tasks:
+    - name: Downloading k9s deb file
+      ansible.builtin.get_url:
+        url: https://github.com/derailed/k9s/releases/download/v0.40.5/k9s_linux_amd64.deb
+        dest: /tmp/k9s_linux_amd64.deb
+    - name: Installaling k9s
+      become: true
+      ansible.builtin.apt:
+        deb: /tmp/k9s_linux_amd64.deb
+    - name: Configuring k9s
+      become: true
+      ansible.builtin.lineinfile:
+        path: /root/.bashrc
+        line: "export  KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
+        state: present
+     

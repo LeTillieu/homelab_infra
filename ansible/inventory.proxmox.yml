@@ -1,0 +1,22 @@
+plugin: community.general.proxmox
+url: https://10.13.13.2:8006
+user: terraform-prov@pve
+token_id: 'terraform'
+token_secret: "{{ lookup('env', 'terraform_private_key') }}"
+validate_certs: false
+want_facts: true
+
+# Add the "ansible_host" variable for all hosts. For it to work the ip has to be set in the cloud-init
+compose:
+  ansible_host: proxmox_ipconfig0.ip.split("/")[0]
+  ansible_user: "'terraform'"
+  ansible_ssh_common_args: "'-o StrictHostKeyChecking=no'"
+
+# Create on group for each tag
+keyed_groups:
+  - key: proxmox_tags_parsed
+    separator: ""
+
+# #create a group for vm with both debian and k8s-node tag (useless atm, just for testing purpose)
+groups:
+  k8s-node: "'debian' in (proxmox_tags_parsed|list) and 'k8s-node' in (proxmox_tags_parsed|list)"
