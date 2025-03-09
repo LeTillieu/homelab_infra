@@ -41,7 +41,8 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-
+        - name: Set up Python 3.11.2
+          uses: actions/setup-python@v4
 
         - name: Lint ansible code
           uses: ansible/ansible-lint@main 
