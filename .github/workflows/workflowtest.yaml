@@ -43,20 +43,13 @@ jobs:
       
       steps:
         - name: Installing git
-          run: apt update && apt install -y git wget
+          run: apt update && apt install -y git wget && pipx install --include-deps ansible
           
         - name: Checkout repository
           uses: actions/checkout@v4
         - name: Debug
           run: "ls -la && whoami && chown -R root:root ."
-    
-        - name: Installing ansible lint
-          uses: ansible/ansible-lint@main
-          with: 
-            args: ""
-            setup_python: "true"
-            working_directory: "./ansible/"
-            requirements_file: ""
+  
         
         - name: Set private Key file
           working-directory: ./ansible
