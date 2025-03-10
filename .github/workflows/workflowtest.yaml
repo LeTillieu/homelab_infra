@@ -48,7 +48,7 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
         - name: Debug
-          run: ls -la && whoami 
+          run: "ls -la && whoami && chown -R root:root ."
     
         - name: Installing ansible lint
           uses: ansible/ansible-lint@main
