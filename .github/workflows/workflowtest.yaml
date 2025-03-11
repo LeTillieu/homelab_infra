@@ -42,19 +42,20 @@ jobs:
         image: "ubuntu:24.04"
       
       steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
         - name: Installing git
           run: apt update && apt install -y git pipx && pipx install --include-deps --force ansible && pipx ensurepath
           
-        - name: Checkout repository
-          uses: actions/checkout@v4
-        - name: Debug
-          run: "ls -la && whoami && chown -R root:root ."
+
+        # - name: Debug
+        #   run: "ls -la && whoami && chown -R root:root ."
   
         
         - name: Set private Key file
           working-directory: ./ansible
           run: |
-            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && ansible -version
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && ansible --version
         
         - name: Install cluster
           working-directory: ./ansible
