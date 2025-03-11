@@ -44,13 +44,10 @@ jobs:
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
-        - name: Installing git
-          run: apt update && apt install -y git pipx && pipx install --include-deps --force ansible && pipx ensurepath
-          
 
-        - name: Debug
-          run: "ls -la ../ && whoami && chown -R root:root ."
-
+        - name: Installing ansible
+          run: apt update && apt install -y pipx && pipx install --include-deps --force ansible && pipx ensurepath
+        
         - name: Update PATH
           run: echo "/github/home/.local/bin" >> $GITHUB_PATH
   
@@ -63,7 +60,3 @@ jobs:
         - name: Install cluster
           working-directory: ./ansible
           run: ansible-playbook install_cluster.yaml
-          env:
-            terraform_allowed_key_private: ${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}
-        
-
