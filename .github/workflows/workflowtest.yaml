@@ -44,6 +44,7 @@ jobs:
               TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
               TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
               # GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
+              TF_gcp_auth: ${{secrets.GCP_CONNECTION_FILE}}
               TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
           
           - name: Keep container running on failure
