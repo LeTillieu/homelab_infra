@@ -42,7 +42,7 @@ jobs:
             
             - name: Keep container running on failure
               if: failure()
-              run: sleep infinit
+              run: sleep infinity
 
     Install_k3s:
       name: Installaling ansible
