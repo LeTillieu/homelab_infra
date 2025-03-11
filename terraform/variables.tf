@@ -44,9 +44,3 @@ variable "k8s_cluster_network_prefix" {
   type        = string
   sensitive   = true
 }
-
-variable "gcp_auth" {
-  description = "Public key to allow ssh connection from my computer"
-  type        = string
-  sensitive   = true
-}
