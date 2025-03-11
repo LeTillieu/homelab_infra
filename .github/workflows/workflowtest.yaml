@@ -3,19 +3,19 @@ on: [push]
 jobs:
     Deploy_VMs:
         runs-on: self-hosted
-        container: 
-          image: "ubuntu:24.04"
+
         steps:
-          - name: Install requierements
-            run: apt update && apt install -y unzip
+          # - name: Install requierements
+          #   run: apt update && apt install -y unzip
         
           - name: Setup node
             uses: actions/setup-node@v4
             with:
               node-version: 22
+
           - name: Checkout repository
             uses: actions/checkout@v4
-            
+
           - name: Setup Terraform
             uses: hashicorp/setup-terraform@v3
 
