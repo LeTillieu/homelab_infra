@@ -7,7 +7,7 @@ jobs:
           image: "ubuntu:24.04"
         steps:
           - name: Install requierements
-            run: apt update && apt install -y unzip
+            run: apt update && apt install -y unzip ca-certificates
         
           - name: Setup node
             uses: actions/setup-node@v4
@@ -29,7 +29,7 @@ jobs:
       
           - name: init terraform
             working-directory: ./terraform
-            run:  echo $GOOGLE_APPLICATION_CREDENTIALS; terraform --version; ls -alrt; terraform init
+            run:  terraform init
             env: 
               GOOGLE_APPLICATION_CREDENTIALS: './gcloud-key.json'
           
