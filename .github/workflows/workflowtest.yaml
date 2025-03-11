@@ -9,7 +9,7 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
             - name: Install requierements
-              run: apt update && apt install -y unzip curl && curl -o- https://fnm.vercel.app/install | bash && source /github/home/.bashrc && fnm install 23
+              run: apt update && apt install -y unzip curl && curl -o- https://fnm.vercel.app/install | bash && echo "/github/home/.local/share/fnm" >> $GITHUB_PATH && fnm install 23
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
