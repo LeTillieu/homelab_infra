@@ -38,3 +38,9 @@ variable "terraform_allowed_key_public" {
   type        = string
   sensitive   = true
 }
+
+variable "k8s_cluster_network_prefix" {
+  description = "Public key to allow ssh connection from my computer"
+  type        = string
+  sensitive   = true
+}

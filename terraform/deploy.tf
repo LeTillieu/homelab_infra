@@ -71,10 +71,15 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
   network_device {
     model = "virtio"
     bridge = "vmbr0"
-    mac_address = format("02:42:ac:11:00:%02x",count.index+1)
   }
 
   initialization {
+    ip_config {
+      ipv4 {
+        address = join("",[var.k8s_cluster_network_prefix,200+count.index,"/24"])
+        gateway = "192.168.1.254"
+      }
+    }
     user_account {
       keys = [var.terraform_allowed_key_public]
       username = "terraform"
@@ -115,11 +120,16 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   network_device {
     model = "virtio"
     bridge = "vmbr0"
-    mac_address = format("02:42:ac:11:01:%02x",count.index+1)
   }
   serial_device {}
 
   initialization {
+    ip_config {
+      ipv4 {
+        address = join("",[var.k8s_cluster_network_prefix,210+count.index,"/24"])
+        gateway = "192.168.1.254"
+      }
+    }
     user_account {
       keys = [var.terraform_allowed_key_public]
       username = "terraform"
@@ -158,11 +168,16 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
   network_device {
     model = "virtio"
     bridge = "vmbr0"
-    mac_address = "02:42:ac:11:02:01"
   }
   serial_device {}
 
   initialization {
+    ip_config {
+      ipv4 {
+        address = join("",[var.k8s_cluster_network_prefix,230,"/24"])
+        gateway = "192.168.1.254"
+      }
+    }
     user_account {
       keys = [var.terraform_allowed_key_public]
       username = "terraform"
