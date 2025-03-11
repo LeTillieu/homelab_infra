@@ -3,16 +3,17 @@ on: [push]
 jobs:
     Deploy_VMs:
         runs-on: self-hosted
-
+        container: 
+          image: "ubuntu:24.04"
         steps:
-          # - name: Install requierements
-          #   run: apt update && apt install -y unzip
+          - name: Install requierements
+            run: apt update && apt install -y unzip
         
           - name: Setup node
             uses: actions/setup-node@v4
             with:
               node-version: 22
-
+              
           - name: Checkout repository
             uses: actions/checkout@v4
 
@@ -42,7 +43,7 @@ jobs:
               TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
               TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
               TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
-              GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
+              # GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
               TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
           
           - name: Keep container running on failure

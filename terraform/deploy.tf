@@ -2,6 +2,7 @@ terraform {
   backend "gcs" {
     bucket = "homelab_terraform"
     prefix = "terraform/state"
+    credentials = "./gcloud-key.json"
   }
   required_providers {
     proxmox = {
