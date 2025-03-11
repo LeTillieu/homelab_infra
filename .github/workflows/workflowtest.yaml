@@ -62,5 +62,8 @@ jobs:
           run: ansible-playbook install_cluster.yaml
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        - name: Keep container running on failure
+          if: failure()
+          run: sleep infinity
         
 
