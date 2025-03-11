@@ -46,7 +46,7 @@ jobs:
           uses: actions/checkout@v4
 
         - name: Installing ansible
-          run: apt update && apt install -y pipx && pipx install --include-deps --force ansible && pipx ensurepath
+          run: apt update && apt install -y pipx python3-requests && pipx install --include-deps --force ansible && pipx ensurepath
         
         - name: Update PATH
           run: echo "/github/home/.local/bin" >> $GITHUB_PATH
