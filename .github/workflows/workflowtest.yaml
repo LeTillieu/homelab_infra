@@ -10,7 +10,10 @@ jobs:
               uses: actions/checkout@v4
             - name: Install requierements
               run: apt update && apt install -y unzip curl && curl -o- https://fnm.vercel.app/install | bash && PATH="/github/home/.local/share/fnm:$PATH" && fnm install 23
-
+            
+            - name: set path
+              run: echo "/github/home/.local/share/fnm" >> $GITHUB_PATH
+            
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
 
