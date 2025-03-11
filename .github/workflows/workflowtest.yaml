@@ -55,8 +55,12 @@ jobs:
         - name: Set private Key file
           working-directory: ./ansible
           run: |
-            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && ansible --version
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key
         
         - name: Install cluster
           working-directory: ./ansible
           run: ansible-playbook install_cluster.yaml
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        
+
