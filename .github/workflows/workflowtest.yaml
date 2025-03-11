@@ -43,7 +43,7 @@ jobs:
       
       steps:
         - name: Installing git
-          run: apt update && apt install -y git pipx && pipx install --include-deps --force ansible
+          run: apt update && apt install -y git pipx && pipx install --include-deps --force ansible && pipx ensurepath
           
         - name: Checkout repository
           uses: actions/checkout@v4
