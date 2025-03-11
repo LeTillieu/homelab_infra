@@ -50,6 +50,9 @@ jobs:
 
         - name: Debug
           run: "ls -la ../ && whoami && chown -R root:root ."
+
+        - name: Update PATH
+          run: echo "/github/home/.local/bin" >> $GITHUB_PATH
   
         
         - name: Set private Key file
