@@ -85,7 +85,7 @@ jobs:
     #       run: sleep infinity
     
     Install_Trilium:
-      name: Deploying Trilium from k8s
+      name: Deploying Trilium with k8s
       runs-on: self-hosted
       # needs: [Install_k3s]
       container: 
@@ -104,8 +104,21 @@ jobs:
             mkdir -p ~/.kube
             echo "${{ secrets.K3S_KUBECONFIG }}" > ~/.kube/config
         
-        - name: Verify Cluster Connection
+        - name: Deploy volumes
+          working-directory: ./k8s/volumes
           run: |
-            kubectl get nodes
+            kubectl appy -f trilium-pv.yaml
+            kubectl appy -f trilium-pvc.yaml
+        
+        - name: Deploy app
+          working-directory: ./k8s/apps
+          run: |
+            kubectl appy -f trilium.yaml
+        
+        - name: Deploy app
+          working-directory: ./k8s/network
+          run: |
+            kubectl appy -f trilium-service.yaml
+
     
 
