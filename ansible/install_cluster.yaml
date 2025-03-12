@@ -18,7 +18,7 @@
     - name: Installing k3s
       changed_when: false # to improve
       ansible.builtin.command:
-        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute"
+        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute --tls-san={{ k3s_proxy_server }}"
       environment:
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "test_token"
@@ -32,7 +32,7 @@
     - name: Installing k3s
       changed_when: false #to improve
       ansible.builtin.command:
-        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute"
+        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute --tls-san={{ k3s_proxy_server }}"
       environment:
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "test_token"
@@ -50,7 +50,7 @@
         INSTALL_K3S_EXEC: "agent"
         K3S_TOKEN: "test_token"
         K3S_URL: "https://{{ k3s_proxy_server }}:6443"
-        
+
     - name: Installing nfs-common
       become: true
       ansible.builtin.package:
