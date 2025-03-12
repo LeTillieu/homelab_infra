@@ -107,18 +107,18 @@ jobs:
         - name: Deploy volumes
           working-directory: ./k8s/volumes
           run: |
-            kubectl appy -f trilium-pv.yaml
-            kubectl appy -f trilium-pvc.yaml
+            kubectl apply -f trilium-pv.yaml
+            kubectl apply -f trilium-pvc.yaml
         
         - name: Deploy app
           working-directory: ./k8s/apps
           run: |
-            kubectl appy -f trilium.yaml
+            kubectl apply -f trilium.yaml
         
         - name: Deploy app
           working-directory: ./k8s/network
           run: |
-            kubectl appy -f trilium-service.yaml
+            kubectl apply -f trilium-service.yaml
 
     
 
