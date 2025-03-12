@@ -15,7 +15,7 @@
     - name: Installing k3s
       changed_when: false # to improve
       ansible.builtin.command:
-        cmd: /tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute
+        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute --tls-san={{ k3s_proxy_server }}"
       environment:
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
@@ -29,7 +29,7 @@
     - name: Installing k3s
       changed_when: false #to improve
       ansible.builtin.command:
-        cmd: /tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute
+        cmd: /tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute --tls-san={{ k3s_proxy_server }}"
       environment:
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
@@ -46,7 +46,7 @@
       environment:
         INSTALL_K3S_EXEC: "agent"
         K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
-        K3S_URL: "{{  'https://' + hostvars[groups['k3s_server'][0]]['ansible_default_ipv4']['address'] + ':6443' }}"
+        K3S_URL: "{{  'https://' + k3s_proxy_server  + ':6443' }}"
     - name: Installing nfs-common
       become: true
       ansible.builtin.package:

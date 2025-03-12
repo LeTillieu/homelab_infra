@@ -77,7 +77,7 @@ jobs:
         
         - name: Install cluster
           working-directory: ./ansible
-          run: ansible-playbook install_cluster.yaml
+          run: ansible-playbook install_cluster.yaml -e k3s_proxy_server="${{secrets.K3S_PROXY_IP}}"
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         - name: Keep container running on failure

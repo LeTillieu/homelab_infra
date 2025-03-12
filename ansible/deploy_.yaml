@@ -1,0 +1,10 @@
+---
+
+- name: Installing k3s
+  hosts: k3s
+  tasks:
+    - name: Downloading k3s install script
+      ansible.builtin.get_url:
+        mode: u=rwx,g=rx,o=
+        dest: /tmp/install_k3s.sh
+        url: https://get.k3s.io
