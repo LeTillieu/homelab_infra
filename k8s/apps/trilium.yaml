@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trilium-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trilium
+  template:
+    metadata:
+      labels:
+        app: trilium
+    spec:
+      containers:
+      - name: trilium-container
+        image: "zadam/trilium:latest"
+        resources:
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        volumeMounts:
+          - name: trilium-storage
+            mountPath: /home/node/trilium-data  # Inside the container where data will be saved
+      volumes:
+        - name: trilium-storage
+          persistentVolumeClaim:
+            claimName: trilium-pvc  # This links to the PVC created above

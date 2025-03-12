@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: trilium-pv
+spec:
+  capacity:
+    storage: 10Gi  # Adjust the size as needed
+  volumeMode: Filesystem
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteMany  # Allows read/write access from multiple pods
+  persistentVolumeReclaimPolicy: Retain  # Change as needed (Retain, Recycle, Delete)
+  nfs:
+    path: /volume1/k8s-trilium  # The folder on your NAS
+    server: 192.168.1.69  # The IP of your NAS
+  mountOptions:
+    - hard
