@@ -23,7 +23,6 @@
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "test_token"
         K3S_CLUSTER_INIT: true
-        K3S_URL: "https://{{ k3s_proxy_server }}:6443"
 
 
 - name: Installing masters
@@ -51,6 +50,7 @@
         INSTALL_K3S_EXEC: "agent"
         K3S_TOKEN: "test_token"
         K3S_URL: "https://{{ k3s_proxy_server }}:6443"
+        
     - name: Installing nfs-common
       become: true
       ansible.builtin.package:
