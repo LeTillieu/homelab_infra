@@ -12,15 +12,18 @@
 - name: Installing first master
   hosts: "{{ groups['k3s_server'][0] }}"
   tasks:
+    - name: Print cluster ip
+      ansible.builtin.debug:
+        msg: "https://{{ k3s_proxy_server }}:6443"
     - name: Installing k3s
       changed_when: false # to improve
       ansible.builtin.command:
         cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute"
       environment:
         INSTALL_K3S_EXEC: "server"
-        K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
+        K3S_TOKEN: "test_token"
         K3S_CLUSTER_INIT: true
-        K3S_URL: "{{  'https://' + k3s_proxy_server + ':6443' }}"
+        K3S_URL: "https://{{ k3s_proxy_server }}:6443"
 
 
 - name: Installing masters
@@ -33,8 +36,8 @@
         cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute"
       environment:
         INSTALL_K3S_EXEC: "server"
-        K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
-        K3S_URL: "{{  'https://' + k3s_proxy_server + ':6443' }}"
+        K3S_TOKEN: "test_token"
+        K3S_URL: "https://{{ k3s_proxy_server }}:6443"
 
 - name: Installing agents
   hosts: k3s_node
@@ -46,8 +49,8 @@
         cmd: /tmp/install_k3s.sh
       environment:
         INSTALL_K3S_EXEC: "agent"
-        K3S_TOKEN: "DH(6Yi-1zVz{.*+y+-jH!vXSR(W.hxbm9zA:H*rS{g,+/6f!OOWD9-'j}h{7r]YZa-fV"
-        K3S_URL: "{{  'https://' + k3s_proxy_server  + ':6443' }}"
+        K3S_TOKEN: "test_token"
+        K3S_URL: "https://{{ k3s_proxy_server }}:6443"
     - name: Installing nfs-common
       become: true
       ansible.builtin.package:
