@@ -113,7 +113,7 @@ jobs:
           uses: actions/download-artifact@v4
           with:
             name: KUBECONFIG
-            path: ~/.kube/config
+            path: ~/config
 
         - name: Installaging requirements
           run: |
@@ -132,6 +132,7 @@ jobs:
             --namespace cert-manager \
             --create-namespace \
             --set installCRDs=true
+
         - name: Installing cert-manager
           run: |
             git clone https://github.com/ebrianne/cert-manager-webhook-duckdns.git
