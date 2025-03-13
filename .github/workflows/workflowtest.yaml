@@ -115,10 +115,16 @@ jobs:
             name: KUBECONFIG
             path: ~/config
 
+        - name: Setting kubeconfig file
+          run: |
+            mkdir ~/.kube
+            mv ~/config ~/.kube/config
+            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
+
         - name: Installaging requirements
           run: |
             apt update
-            apt install -y git make 
+            apt install -y git make curl
 
         - name: Installing cert-manager
           run: |
@@ -168,8 +174,13 @@ jobs:
           uses: actions/download-artifact@v4
           with:
             name: KUBECONFIG
-            path: ~/.kube/config
-
+            path: ~/config
+  
+        - name: Setting kubeconfig file
+          run: |
+            mkdir ~/.kube
+            mv ~/config ~/.kube/config
+            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         - name: Deploy volumes
           working-directory: ./k8s/volumes
           run: |
