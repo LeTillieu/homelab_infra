@@ -124,7 +124,7 @@ jobs:
         - name: Installaging requirements
           run: |
             apt update
-            apt install -y git make curl
+            apt install -y git make curl docker.io
 
         - name: Installing cert-manager
           run: |
