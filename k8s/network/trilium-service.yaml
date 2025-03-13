@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: trilium-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: trilium
   ports:
     - protocol: TCP
       port: 80        # Service port inside the cluster
       targetPort: 8080 # Container port
-      nodePort: 30080  # Exposed on all nodes

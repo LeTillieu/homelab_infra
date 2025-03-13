@@ -80,10 +80,74 @@ jobs:
           run: ansible-playbook install_cluster.yaml -e k3s_proxy_server="${{secrets.K3S_PROXY_IP}}"
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        
+        - name: Saving KUBECONFIG
+          uses: actions/upload-artifact@v4
+          with:
+            name: KUBECONFIG
+            path: ~/k3s.yaml
+            if-no-files-found: error
+            retention-days: 1
+            overwrite: true
+
         - name: Keep container running on failure
           if: failure()
           run: sleep infinity
     
+    Install_cert_manager:
+      name: Installing cert-manager with k8s
+      runs-on: self-hosted
+      needs: [Install_k3s]
+      container: 
+        image: "ubuntu:24.04"
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        
+        - name: Installing kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: 'latest'
+
+        - name: Retreive KUBECONFIG
+          uses: actions/download-artifact@v4
+          with:
+            name: KUBECONFIG
+            path: ~/.kube/config
+
+        - name: Installaging requirements
+          run: |
+            apt update
+            apt install -y git make 
+
+        - name: Installing cert-manager
+          run: |
+            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            chmod 700 get_helm.sh
+            ./get_helm.sh
+            helm repo add jetstack https://charts.jetstack.io
+            helm repo update
+            helm install \
+            cert-manager jetstack/cert-manager \
+            --namespace cert-manager \
+            --create-namespace \
+            --set installCRDs=true
+        - name: Installing cert-manager
+          run: |
+            git clone https://github.com/ebrianne/cert-manager-webhook-duckdns.git
+            cd ./cert-manager-webhook-duckdns
+            make build
+            helm install cert-manager-webhook-duckdns \
+            --namespace cert-manager \
+            --set duckdns.token='${{ secrets.DUCKDNS_TOKEN }}' \
+            --set clusterIssuer.production.create=true \
+            --set clusterIssuer.staging.create=true \
+            --set clusterIssuer.email=${{ vars.DUCKDNS_EMAIL }} \
+            --set logLevel=2 \
+            ./deploy/cert-manager-webhook-duckdns
+
+
+
     Install_Trilium:
       name: Deploying Trilium with k8s
       runs-on: self-hosted
@@ -99,11 +163,12 @@ jobs:
           with:
             version: 'latest'
         
-        - name: Set up Kubeconfig
-          run: |
-            mkdir -p ~/.kube
-            echo "${{ secrets.K3S_KUBECONFIG }}" > ~/.kube/config
-        
+        - name: Retreive KUBECONFIG
+          uses: actions/download-artifact@v4
+          with:
+            name: KUBECONFIG
+            path: ~/.kube/config
+
         - name: Deploy volumes
           working-directory: ./k8s/volumes
           run: |

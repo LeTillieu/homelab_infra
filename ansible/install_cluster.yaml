@@ -23,6 +23,10 @@
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "test_token"
         K3S_CLUSTER_INIT: true
+    - name: Save KUBECONFIG file
+      ansible.builtin.fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: ~/k3s.yaml
 
 
 - name: Installing masters
