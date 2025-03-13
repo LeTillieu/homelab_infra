@@ -132,25 +132,31 @@ jobs:
             ./get_helm.sh
             helm repo add jetstack https://charts.jetstack.io
             helm repo update
-            helm install \
-            cert-manager jetstack/cert-manager \
-            --namespace cert-manager \
-            --create-namespace \
-            --set installCRDs=true
+            if [[ $(helm list -n cert-manager | grep deployed) ]]
+            then
+              helm install \
+              cert-manager jetstack/cert-manager \
+              --namespace cert-manager \
+              --create-namespace \
+              --set installCRDs=true
+            fi
 
-        - name: Installing cert-manager
+        - name: Installing cert-manager-webhook-duckdns
           run: |
-            git clone https://github.com/ebrianne/cert-manager-webhook-duckdns.git
-            cd ./cert-manager-webhook-duckdns
-            make build
-            helm install cert-manager-webhook-duckdns \
-            --namespace cert-manager \
-            --set duckdns.token='${{ secrets.DUCKDNS_TOKEN }}' \
-            --set clusterIssuer.production.create=true \
-            --set clusterIssuer.staging.create=true \
-            --set clusterIssuer.email=${{ vars.DUCKDNS_EMAIL }} \
-            --set logLevel=2 \
-            ./deploy/cert-manager-webhook-duckdns
+            if [[ $(helm list -n cert-manager | grep cert-manager-webhook-duckdns |grep deployed) ]]
+            then
+              git clone https://github.com/ebrianne/cert-manager-webhook-duckdns.git
+              cd ./cert-manager-webhook-duckdns
+              make build
+              helm install cert-manager-webhook-duckdns \
+              --namespace cert-manager \
+              --set duckdns.token='${{ secrets.DUCKDNS_TOKEN }}' \
+              --set clusterIssuer.production.create=true \
+              --set clusterIssuer.staging.create=true \
+              --set clusterIssuer.email=${{ vars.DUCKDNS_EMAIL }} \
+              --set logLevel=2 \
+              ./deploy/cert-manager-webhook-duckdns
+            fi
         - name: Keep container running on failure
           if: failure()
           run: sleep infinity
