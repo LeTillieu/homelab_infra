@@ -132,7 +132,7 @@ jobs:
             ./get_helm.sh
             helm repo add jetstack https://charts.jetstack.io
             helm repo update
-            if [[ $(helm list -n cert-manager | grep deployed) ]]
+            if [ $(helm list -n cert-manager | grep deployed) ]
             then
               helm install \
               cert-manager jetstack/cert-manager \
@@ -140,10 +140,16 @@ jobs:
               --create-namespace \
               --set installCRDs=true
             fi
+        
+        - name: Creating certificates and ingress
+          working-directory: ./k8s
+          run: |
+            kubectl apply -f certificates.yaml
+            kubectl apply -f ingress.yaml
 
         - name: Installing cert-manager-webhook-duckdns
           run: |
-            if [[ $(helm list -n cert-manager | grep cert-manager-webhook-duckdns |grep deployed) ]]
+            if [ $(helm list -n cert-manager | grep cert-manager-webhook-duckdns |grep deployed) ]
             then
               git clone https://github.com/ebrianne/cert-manager-webhook-duckdns.git
               cd ./cert-manager-webhook-duckdns
