@@ -113,11 +113,11 @@ jobs:
           uses: actions/download-artifact@v4
           with:
             name: KUBECONFIG
-            path: ~/config
+            path: ~/
 
         - name: Setting kubeconfig file
           run: |
-            mv ~/config ~/.kube/config
+            mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
 
         - name: Installaging requirements
@@ -176,11 +176,11 @@ jobs:
           uses: actions/download-artifact@v4
           with:
             name: KUBECONFIG
-            path: ~/config
+            path: ~/
   
         - name: Setting kubeconfig file
           run: |
-            mv ~/config ~/.kube/config
+            mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         - name: Deploy volumes
           working-directory: ./k8s/volumes
