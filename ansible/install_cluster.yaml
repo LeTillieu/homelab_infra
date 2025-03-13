@@ -24,6 +24,7 @@
         K3S_TOKEN: "test_token"
         K3S_CLUSTER_INIT: true
     - name: Save KUBECONFIG file
+      become: true
       ansible.builtin.fetch:
         src: /etc/rancher/k3s/k3s.yaml
         dest: ~/k3s.yaml
