@@ -117,7 +117,6 @@ jobs:
 
         - name: Setting kubeconfig file
           run: |
-            mkdir ~/.kube
             mv ~/config ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
 
@@ -178,7 +177,6 @@ jobs:
   
         - name: Setting kubeconfig file
           run: |
-            mkdir ~/.kube
             mv ~/config ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         - name: Deploy volumes
