@@ -4,7 +4,7 @@ metadata:
   name: ssl-certificate
 spec:
   dnsNames:
-  - 'apptest.ltillieu.duckdns.org'
+  - 'trilium.ltillieu.duckdns.org'
   issuerRef:
     name: cert-manager-webhook-duckdns-production
     kind: ClusterIssuer
