@@ -151,6 +151,9 @@ jobs:
             --set clusterIssuer.email=${{ vars.DUCKDNS_EMAIL }} \
             --set logLevel=2 \
             ./deploy/cert-manager-webhook-duckdns
+        - name: Keep container running on failure
+          if: failure()
+          run: sleep infinity
 
 
 
@@ -194,6 +197,9 @@ jobs:
           working-directory: ./k8s/network
           run: |
             kubectl apply -f trilium-service.yaml
+        - name: Keep container running on failure
+          if: failure()
+          run: sleep infinity
 
     
 
