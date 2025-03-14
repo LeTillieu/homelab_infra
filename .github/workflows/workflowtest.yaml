@@ -140,12 +140,7 @@ jobs:
               --create-namespace \
               --set installCRDs=true
             fi
-        
-        - name: Creating certificates and ingress
-          working-directory: ./k8s
-          run: |
-            kubectl apply -f certificates.yaml
-            kubectl apply -f ingress.yaml
+
 
         - name: Installing cert-manager-webhook-duckdns
           run: |
@@ -162,6 +157,13 @@ jobs:
               --set logLevel=2 \
               ./deploy/cert-manager-webhook-duckdns
             fi
+            
+        - name: Creating certificates and ingress
+          working-directory: ./k8s
+          run: |
+            kubectl apply -f certificates.yaml
+            kubectl apply -f ingress.yaml
+
         - name: Keep container running on failure
           if: failure()
           run: sleep infinity
