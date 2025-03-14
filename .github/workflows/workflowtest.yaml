@@ -133,7 +133,7 @@ jobs:
             ./get_helm.sh
             helm repo add jetstack https://charts.jetstack.io
             helm repo update
-            if [ ! $(helm list -n cert-manager | grep deployed ]; then
+            if [ ! $(helm list -n cert-manager | grep deployed) ]; then
               helm install \
               cert-manager jetstack/cert-manager \
               --namespace cert-manager \
