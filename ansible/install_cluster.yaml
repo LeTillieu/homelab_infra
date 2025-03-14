@@ -17,9 +17,11 @@
 - name: Installing first master
   hosts: "{{ groups['k3s_server'][0] }}"
   tasks:
-    - name: Print cluster ip
-      ansible.builtin.debug:
-        msg: "https://{{ k3s_proxy_server }}:6443"
+    - name: Check if k3s is already installed
+      register: k3s_installed
+      ansible.builtin.stat:
+        path: /etc/rancher/k3s/k3s.yaml
+
     - name: Installing k3s
       changed_when: false # to improve
       ansible.builtin.command:
@@ -28,18 +30,25 @@
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
         K3S_CLUSTER_INIT: true
+      when: not k3s_installed.stat.exists
     - name: Save KUBECONFIG file
       become: true
       ansible.builtin.fetch:
         src: /etc/rancher/k3s/k3s.yaml
         dest: ~/k3s.yaml
         flat: true
+      when: not k3s_installed.stat.exists
 
 
 - name: Installing masters
   hosts: "{{ groups['k3s_server'][1:] }}"
   gather_facts: true
   tasks:
+    - name: Check if k3s is already installed
+      register: k3s_installed
+      ansible.builtin.stat:
+        path: /etc/rancher/k3s/k3s.yaml
+
     - name: Installing k3s
       changed_when: false #to improve
       ansible.builtin.command:
@@ -48,11 +57,17 @@
         INSTALL_K3S_EXEC: "server"
         K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
         K3S_URL: "https://{{ k3s_proxy_server }}:6443"
+      when: not k3s_installed.stat.exists
 
 - name: Installing agents
   hosts: k3s_node
   gather_facts: true
   tasks:
+    - name: Check if k3s is already installed
+      register: k3s_installed
+      ansible.builtin.stat:
+        path: /etc/rancher/k3s/k3s.yaml
+
     - name: Installing k3s
       changed_when: false #to improve
       ansible.builtin.command:
@@ -61,7 +76,8 @@
         INSTALL_K3S_EXEC: "agent"
         K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
         K3S_URL: "https://{{ k3s_proxy_server }}:6443"
-
+      when: not k3s_installed.stat.exists
+      
     - name: Installing nfs-common
       become: true
       ansible.builtin.package:
