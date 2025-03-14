@@ -96,3 +96,70 @@ jobs:
         - name: Keep container running on failure
           if: failure()
           run: sleep infinity
+      
+    Install_cert_manager:
+      name: Installing cert-manager with k8s
+      runs-on: self-hosted
+      needs: [Install_k3s]
+      container: 
+        image: "ubuntu:24.04"
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        
+        - name: Installing kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: 'latest'
+
+        - name: Retreive KUBECONFIG
+          uses: actions/download-artifact@v4
+          with:
+            name: KUBECONFIG
+            path: ~/
+
+        - name: Setting kubeconfig file
+          run: |
+            mv ~/k3s.yaml ~/.kube/config
+            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
+
+        - name: Installaging requirements
+          run: |
+            apt update
+            apt install -y git make curl
+
+        - name: Installing cert-manager
+          run: |
+            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            chmod 700 get_helm.sh
+            ./get_helm.sh
+            helm repo add jetstack https://charts.jetstack.io
+            helm repo update
+            if [[ $(helm list -n cert-manager | grep deployed) ]]
+            then
+              helm install \
+              cert-manager jetstack/cert-manager \
+              --namespace cert-manager \
+              --create-namespace \
+              --set installCRDs=true
+            fi
+
+        - name: Installing cert-manager-webhook-duckdns
+          run: |
+            if [[ $(helm list -n cert-manager | grep cert-manager-webhook-duckdns |grep deployed) ]]
+            then
+              git clone https://github.com/ebrianne/cert-manager-webhook-duckdns.git
+              cd ./cert-manager-webhook-duckdns
+              make build
+              helm install cert-manager-webhook-duckdns \
+              --namespace cert-manager \
+              --set duckdns.token='${{ secrets.DUCKDNS_TOKEN }}' \
+              --set clusterIssuer.production.create=true \
+              --set clusterIssuer.staging.create=true \
+              --set clusterIssuer.email=${{ vars.DUCKDNS_EMAIL }} \
+              --set logLevel=2 \
+              ./deploy/cert-manager-webhook-duckdns
+            fi
+        - name: Keep container running on failure
+          if: failure()
+          run: sleep infinity
