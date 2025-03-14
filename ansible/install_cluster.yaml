@@ -77,7 +77,7 @@
         K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
         K3S_URL: "https://{{ k3s_proxy_server }}:6443"
       when: not k3s_installed.stat.exists
-      
+
     - name: Installing nfs-common
       become: true
       ansible.builtin.package:
@@ -86,14 +86,23 @@
 - name: Installing k9s
   hosts: 'k3s_server'
   tasks:
+    - name: Check if k9s is already installed
+      register: k9s_installed
+      ansible.builtin.stat:
+        path: /usr/bin/k9s
+
     - name: Downloading k9s deb file
       ansible.builtin.get_url:
         url: https://github.com/derailed/k9s/releases/download/v0.40.5/k9s_linux_amd64.deb
         dest: /tmp/k9s_linux_amd64.deb
+      when: not k9s_installed.stat.exists
+
     - name: Installaling k9s
       become: true
       ansible.builtin.apt:
         deb: /tmp/k9s_linux_amd64.deb
+      when: not k9s_installed.stat.exists
+
     - name: Configuring k9s
       become: true
       ansible.builtin.lineinfile:
