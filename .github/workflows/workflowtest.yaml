@@ -110,6 +110,11 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
+        - name: Installing kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: 'latest'
+            
         - name: Installing ansible and dependencies
           run: apt update && apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests 
         

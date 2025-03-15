@@ -31,16 +31,6 @@
         name: curl
         state: present
 
-    - name: Cloning Kubernetes python module
-      ansible.builtin.git:
-        repo: https://github.com/kubernetes-client/python.git
-        dest: /tmp/python_k8s/
-    
-    - name: Installing Kubernetes python module
-      ansible.builtin.command:
-        chdir: /tmp/python_k8s/
-        cmd: python3 setup.py install
-
     - name: Creating cert-manager namespace
       kubernetes.core.k8s:
         definition:
