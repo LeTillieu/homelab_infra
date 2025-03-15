@@ -110,16 +110,17 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Creating python venv
-          run: python3 -m venv ansible-venv && source ansible-venv/bin/activate && p
-
         - name: Installing ansible and dependencies
-          run: apt update && apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests kubenertes-core
+          run: |
+            apt update
+            apt install -y pipx python3-requests ssh
+            pipx install --include-deps --force ansible
+            pipx inject ansible requests 
+            pipx inject ansible kubenertes
         
         - name: Update PATH
           run: echo "/github/home/.local/bin" >> $GITHUB_PATH
   
-        
         - name: Set private Key file
           working-directory: ./ansible
           run: |
