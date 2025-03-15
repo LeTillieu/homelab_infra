@@ -49,7 +49,7 @@
           - value: installCRDs=true
         state: present
         wait: true
-        timeout: 300
+        timeout: "5m"
         
     - name: Cloning cert-manager-webhook-duckdns repo
       ansible.builtin.git:
@@ -70,7 +70,7 @@
         create_namespace: true
         state: present
         wait: true
-        timeout: 300
+        timeout: "5m"
         set_values:
           - value: duckdns.token="{{ duckdns_token }}"
           - value: clusterIssuer.production.create=true
