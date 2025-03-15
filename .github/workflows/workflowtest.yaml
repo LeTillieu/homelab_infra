@@ -110,13 +110,11 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Installing kubectl
-          uses: azure/setup-kubectl@v4
-          with:
-            version: 'latest'
-            
+        - name: Creating python venv
+          run: python3 -m venv ansible-venv && source ansible-venv/bin/activate && p
+
         - name: Installing ansible and dependencies
-          run: apt update && apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests 
+          run: apt update && apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests kubenertes-core
         
         - name: Update PATH
           run: echo "/github/home/.local/bin" >> $GITHUB_PATH
@@ -127,10 +125,15 @@ jobs:
           run: |
             echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-        - name: Install cluster
+        - name: Deploy cert-manager
           working-directory: ./ansible
           run: |
             ansible-galaxy collection install kubernetes.core
             ansible-playbook deploy_certificate_manager.yaml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        
+        - name: Keep container running on failure
+          if: failure()
+          run: sleep infinity
+              
