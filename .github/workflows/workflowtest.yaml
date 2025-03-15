@@ -60,7 +60,7 @@ jobs:
     Install_k3s:
       name: Deploying K3S cluster
       runs-on: self-hosted
-      needs: [Deploy_VMs]
+      # needs: [Deploy_VMs]
       container: 
         image: "ubuntu:24.04"
       
@@ -102,7 +102,7 @@ jobs:
     Install_cert_manager:
       name: Deploying cert-manager
       runs-on: self-hosted
-      # needs: [Install_k3s]
+      needs: [Install_k3s]
       container: 
         image: "ubuntu:24.04"
       
@@ -125,7 +125,7 @@ jobs:
           run: |
             mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
-            
+
         - name: Installing ansible and dependencies
           run: |
             apt update
