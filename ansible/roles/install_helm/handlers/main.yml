@@ -2,6 +2,7 @@
 ---
 # handlers file for ansible/roles/install_helm
 - name:  Uninstalling make
+  become: true
   ansible.builtin.package:
     name: make
     state: absent
