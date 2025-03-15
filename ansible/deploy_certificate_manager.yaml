@@ -46,7 +46,7 @@
         release_namespace: cert-manager
         create_namespace: true
         set_values:
-          installCRDs: true
+          - value: installCRDs=true
         state: present
         wait: true
         timeout: 300
@@ -72,11 +72,11 @@
         wait: true
         timeout: 300
         set_values:
-          duckdns.token: "{{ duckdns_token }}"
-          clusterIssuer.production.create: true
-          clusterIssuer.staging.create: true
-          clusterIssuer.email: "{{ duckdns_email }}"
-          logLevel: 2
+          - value: duckdns.token="{{ duckdns_token }}"
+          - value: clusterIssuer.production.create=true
+          - value: clusterIssuer.staging.create=true
+          - value: clusterIssuer.email="{{ duckdns_email }}"
+          - value: logLevel=2
       
       
 
