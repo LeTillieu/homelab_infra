@@ -116,7 +116,7 @@ jobs:
             apt install -y pipx python3-requests ssh
             pipx install --include-deps --force ansible
             pipx inject ansible requests 
-            pipx inject ansible kubenertes
+            pipx inject ansible kubernetes
         
         - name: Update PATH
           run: echo "/github/home/.local/bin" >> $GITHUB_PATH
