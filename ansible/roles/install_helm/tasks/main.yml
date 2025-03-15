@@ -4,20 +4,21 @@
     name: curl
     state: present
 
-- name: Download Helm tarball
+- name: Download Helm
   ansible.builtin.get_url:
     url: "{{ helm_url }}"
     dest: "/tmp/helm-{{ helm_version }}-linux-amd64.tar.gz"
     mode: '0644'
 
-- name: Extract Helm tarball
+- name: Extract Helm
   ansible.builtin.unarchive:
     src: "/tmp/helm-{{ helm_version }}-linux-amd64.tar.gz"
     dest: "/tmp/"
     
     remote_src: yes
 
-- name: Install Helm binary
+- name: Install Helm
+  become: true
   ansible.builtin.command: 
     cmd: mv /tmp/linux-amd64/helm {{ helm_install_path }}
     creates: "{{ helm_install_path }}"  # This makes the task idempotent
