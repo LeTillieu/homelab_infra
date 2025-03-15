@@ -124,6 +124,8 @@ jobs:
         
         - name: Install cluster
           working-directory: ./ansible
-          run: ansible-playbook deploy_certificate_manager.yaml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
+          run: |
+            ansible-galaxy collection install community.kubernetes
+            ansible-playbook deploy_certificate_manager.yaml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}

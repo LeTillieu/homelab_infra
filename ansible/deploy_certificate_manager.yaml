@@ -6,6 +6,7 @@
     - name: Downloading k3s install script
       ansible.builtin.include_role:
         name: install_helm
+    
     - name: Adding jetstack repo
       community.kubernetes.helm_repository:
         name: jetstack
@@ -40,6 +41,7 @@
       ansible.builtin.package:
         name: make
         state: present
+      notify: "Uninstall make"
     
     - name:  Installing curl
       ansible.builtin.package:
@@ -72,4 +74,6 @@
           clusterIssuer.staging.create: true
           clusterIssuer.email: "{{ duckdns_email }}"
           logLevel: 2
+      
+      
 

@@ -1,3 +1,8 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # handlers file for ansible/roles/install_helm
+- name:  Uninstalling make
+  ansible.builtin.package:
+    name: make
+    state: absent
+  listen: "Uninstall make"
