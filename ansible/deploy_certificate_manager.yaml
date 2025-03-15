@@ -1,7 +1,7 @@
 ---
 
 - name: Installing k3s
-  hosts: k3s_server
+  hosts: localhost
   tasks:
     - name: Installing helm
       ansible.builtin.include_role:
