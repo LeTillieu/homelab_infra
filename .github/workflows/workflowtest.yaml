@@ -37,7 +37,6 @@ jobs:
           - name: Apply terraform
             working-directory: ./terraform
             run: |
-              terraform apply -auto-approve -destroy
               terraform apply -auto-approve
             env: 
               TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
