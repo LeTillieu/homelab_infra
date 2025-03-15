@@ -50,6 +50,9 @@ jobs:
               GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
               TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
           
+          - name: Sleep for 5 minutes
+            run: sleep 300
+
           - name: Keep container running on failure
             if: failure()
             run: sleep infinity
@@ -136,10 +139,10 @@ jobs:
             helm repo update
             if [[ $(helm list -n cert-manager | grep deployed) ]]
             then
+              kubectl create namespace cert-manager --dry-run=client -o yaml | kubectl apply -f -
               helm install \
               cert-manager jetstack/cert-manager \
               --namespace cert-manager \
-              --create-namespace \
               --set installCRDs=true
             fi
 
@@ -162,3 +165,40 @@ jobs:
         - name: Keep container running on failure
           if: failure()
           run: sleep infinity
+    Install_argocd:
+      name: Installing ArgoCD
+      runs-on: self-hosted
+      needs: [Install_cert_manager]
+      container: 
+        image: "ubuntu:24.04"
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        
+        - name: Installing kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: 'latest'
+
+        - name: Retreive KUBECONFIG
+          uses: actions/download-artifact@v4
+          with:
+            name: KUBECONFIG
+            path: ~/
+  
+        - name: Setting kubeconfig file
+          run: |
+            mv ~/k3s.yaml ~/.kube/config
+            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
+        
+        - name: Installing argocd
+          run: |
+            kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+            kubectl apply -n argocd -f argocd.yaml
+            kubectl apply -n argocd -f argocd-cert.yaml
+            kubectl apply -n argocd -f argocd-ingress.yaml
+        
+        - name: Keep container running on failure
+          if: failure()
+          run: sleep infinity
+            
