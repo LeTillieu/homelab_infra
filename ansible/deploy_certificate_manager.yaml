@@ -23,12 +23,17 @@
       ansible.builtin.package:
         name: make
         state: present
-      notify: "Uninstall make"
     
     - name:  Installing curl
       become: true
       ansible.builtin.package:
         name: curl
+        state: present
+    
+    - name:  Installing docker
+      become: true
+      ansible.builtin.package:
+        name: docker.io
         state: present
 
     - name: Creating cert-manager namespace
