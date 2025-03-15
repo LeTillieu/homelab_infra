@@ -50,8 +50,8 @@ jobs:
               GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
               TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
           
-          - name: Sleep for 5 minutes
-            run: sleep 300
+          # - name: Sleep for 5 minutes
+          #   run: sleep 300
 
           - name: Keep container running on failure
             if: failure()
