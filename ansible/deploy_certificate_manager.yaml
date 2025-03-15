@@ -39,7 +39,7 @@
     - name: Installing Kubernetes python module
       ansible.builtin.command:
         chdir: /tmp/python_k8s/
-        cmd: python setup.py install
+        cmd: python3 setup.py install
 
     - name: Creating cert-manager namespace
       kubernetes.core.k8s:
