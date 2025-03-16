@@ -3,7 +3,7 @@
 # tasks file for roles/create_postgresql_users
 - name: Including vault
   ansible.builtin.include_vars:
-    file: "vault.yml"
+    file: "./vault.yml"
 
 - name: Installing postgres
   become: true
