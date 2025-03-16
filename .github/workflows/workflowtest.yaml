@@ -245,7 +245,7 @@ jobs:
     #       working-directory: ./ansible
     #       run: |
     #         ansible-galaxy collection install kubernetes.core
-    #         ansible-playbook deploy_argocd.yaml
+    #         ansible-playbook deploy_argocd.yml
     #       env:
     #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
@@ -299,7 +299,7 @@ jobs:
           working-directory: ./ansible
           run: |
             ansible-galaxy collection install kubernetes.core
-            ansible-playbook deploy_sealedsecrets.yaml
+            ansible-playbook deploy_sealedsecrets.yml
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
