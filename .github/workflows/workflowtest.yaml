@@ -107,17 +107,6 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Retreive KUBECONFIG
-          uses: actions/download-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/
-
-        - name: Setting kubeconfig file
-          run: |
-            mv ~/k3s.yaml ~/.kube/config
-            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
-
         - name: Installing ansible and dependencies
           run: |
             apt update
@@ -246,8 +235,8 @@ jobs:
           run: |
             ansible-galaxy collection install kubernetes.core
             ansible-playbook deploy_argocd.yml
-    #       env:
-    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
     Install_SealedSecrets:
       name: Deploying Sealedsecrets
@@ -273,6 +262,7 @@ jobs:
 
         - name: Setting kubeconfig file
           run: |
+            mkdir -p ~/.kube/
             mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         
@@ -303,10 +293,6 @@ jobs:
             ansible-playbook deploy_sealedsecrets.yml
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
-        - name: Keep running on failure
-          if: failure()
-          run:
-            sleep 86400
     
         
               
