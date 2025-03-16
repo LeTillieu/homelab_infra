@@ -56,7 +56,8 @@
         release_namespace: cert-manager
         create_namespace: true
         set_values:
-          - value: installCRDs=true
+          - value:  crds.enabled=true
+          - value:  extraArgs={--dns01-recursive-nameservers-only,--dns01-recursive-nameservers=8.8.8.8:53\,1.1.1.1:53}
         state: present
         wait: true
         timeout: "5m"
