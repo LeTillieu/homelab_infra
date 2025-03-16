@@ -14,6 +14,7 @@
     state: present
 
 - name: Creating database
+  become_user: "postgres"
   community.postgresql.postgresql_db:
     name: "postgres"
     encoding: 'UTF8'
@@ -21,6 +22,7 @@
 
 - name: Creating schemas
   loop: "{{ schemes }}"
+  become_user: "postgres"
   community.postgresql.postgresql_schema:
     database: "postgres"
     name: "{{ item.name }}"
@@ -28,6 +30,7 @@
 
 - name: Creating users
   loop: "{{ schemes }}"
+  become_user: "postgres"
   community.postgresql.postgresql_user:
     db: "postgres"
     role: "{{ item.username }}"
@@ -36,6 +39,7 @@
 
 - name: Setting user's privileges
   loop: "{{ schemes }}"
+  become_user: "postgres"
   community.postgresql.postgresql_privs:
     database: "postgres"
     role: "{{ item.username }}"
