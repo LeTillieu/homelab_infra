@@ -147,7 +147,6 @@ jobs:
           run: |
             ansible-galaxy collection install community.postgresql
             ansible-playbook setup_postgresql.yaml --vault-password-file ./vault_pass.txt
-
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         

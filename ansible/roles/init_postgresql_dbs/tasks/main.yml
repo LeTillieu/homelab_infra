@@ -1,12 +1,6 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for roles/create_postgresql_users
-- name: Including vault
-  no_log: false
-  ansible.builtin.include_vars:
-    file: "./vault.yml"
-
-
 - name: Installing postgres
   become: true
   ansible.builtin.package:
@@ -44,7 +38,7 @@
   become_user: "postgres"
   community.postgresql.postgresql_user:
     db: "postgres"
-    role: "{{ item.username }}"
+    name: "{{ item.username }}"
     password: "{{ item.password }}"
     login_unix_socket : "/var/run/postgresql"
     state: present
