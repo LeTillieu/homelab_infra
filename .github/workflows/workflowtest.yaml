@@ -136,11 +136,18 @@ jobs:
           run: |
             echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
+        
+        - name: Set vault password file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
+        
         - name: Installing postgresql
           working-directory: ./ansible
           run: |
             ansible-galaxy collection install community.postgresql
-            ansible-playbook setup_postgresql.yaml
+            ansible-playbook setup_postgresql.yaml --vault-password-file ./vault_pass.txt
+
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
