@@ -3,6 +3,12 @@
 - name: Deploying ArgoCD
   hosts: localhost
   tasks:
+    - name:  Installing git
+      become: true
+      ansible.builtin.package:
+        name: git
+        state: present
+        
     - name: Installing helm
       ansible.builtin.include_role:
         name: install_helm
