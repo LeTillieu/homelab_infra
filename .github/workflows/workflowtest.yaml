@@ -79,7 +79,7 @@ jobs:
         
         - name: Install cluster
           working-directory: ./ansible
-          run: ansible-playbook install_cluster.yaml -e k3s_proxy_server="${{secrets.K3S_PROXY_IP}}"
+          run: ansible-playbook install_cluster.yml -e k3s_proxy_server="${{secrets.K3S_PROXY_IP}}"
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
@@ -143,7 +143,7 @@ jobs:
     #       working-directory: ./ansible
     #       run: |
     #         ansible-galaxy collection install community.postgresql
-    #         ansible-playbook setup_postgresql.yaml --vault-password-file ./vault_pass.txt
+    #         ansible-playbook setup_postgresql.yml --vault-password-file ./vault_pass.txt
     #       env:
     #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
                       
@@ -194,7 +194,7 @@ jobs:
     #       working-directory: ./ansible
     #       run: |
     #         ansible-galaxy collection install kubernetes.core
-    #         ansible-playbook deploy_certificate_manager.yaml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
+    #         ansible-playbook deploy_certificate_manager.yml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
     #       env:
     #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
@@ -250,7 +250,7 @@ jobs:
     #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
     Install_SealedSecrets:
-      name: Deploying cert-manager
+      name: Deploying Sealedsecrets
       runs-on: self-hosted
       needs: [Install_k3s]
       container: 
