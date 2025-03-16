@@ -39,7 +39,7 @@
   community.postgresql.postgresql_user:
     db: "postgres"
     role: "{{ item.username }}"
-    password: "{{ item.username }}"
+    password: "{{ item.password }}"
     login_unix_socket : "/var/run/postgresql"
     state: present
 
