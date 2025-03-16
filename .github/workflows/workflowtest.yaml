@@ -277,6 +277,7 @@ jobs:
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         
         - name: Settings sealedSecrets private key file
+          working-directory: ./ansible
           run:
             echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealedsecret_private.key
         - name: Installing ansible and dependencies
