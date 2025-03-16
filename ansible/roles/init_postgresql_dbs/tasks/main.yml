@@ -16,7 +16,7 @@
 - name: Creating schemas
   with: "{{ schemes }}"
   community.postgresql.postgresql_schema :
-    db: "postgres"
+    database: "postgres"
     name: "{{ item.name }}"
     state: present
 
