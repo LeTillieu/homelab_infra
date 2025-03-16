@@ -1,0 +1,86 @@
+---
+
+- name: Deploying ArgoCD
+  hosts: localhost
+  tasks:
+    - name: Creating argocd namespace
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: argocd
+
+    - name: Downloading argocd manifests
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+        dest: /tmp/argocd.yaml
+  
+    - name: Installing argocd
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/argocd.yaml
+        namespace: argocd
+    
+    - name: Argocd disable TLS
+      kubernetes.core.k8s:
+        state: patched
+        kind: Deployment
+        name: argocd-server
+        namespace: argocd
+        definition:
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: argocd-server
+                    args:
+                      - /usr/local/bin/argocd-server
+                      - --insecure
+      
+    - name: Argocd create certificate
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: cert-manager.io/v1
+          kind: Certificate
+          metadata:
+            name: ssl-certificate
+            namespace: argocd
+          spec:
+            dnsNames:
+            - 'argocd.ltillieu.duckdns.org'
+            issuerRef:
+              name: cert-manager-webhook-duckdns-production
+              kind: ClusterIssuer
+            secretName: argocd-ssl-certificate
+    
+    - name: Argocd create ingress
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: argocd-server-http-ingress
+            namespace: argocd
+            annotations:
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+          spec:
+            ingressClassName: nginx
+            rules:
+            - http:
+                paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: argocd-server
+                      port:
+                        name: http
+              host: argocd.ltillieu.duckdns.org
+            tls:
+            - hosts:
+              - argocd.ltillieu.duckdns.org
+              secretName: argocd-ssl-certificate
