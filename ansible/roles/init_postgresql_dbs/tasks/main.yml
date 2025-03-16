@@ -87,6 +87,9 @@
     state: present
 
 - name: Set default privileges on objects
+  loop: "{{ schemes }}"
+  become: true
+  become_user: "postgres"
   community.postgresql.postgresql_privs:
     database: "{{ item.name }}"
     objs: table,sequence,function,procedure
