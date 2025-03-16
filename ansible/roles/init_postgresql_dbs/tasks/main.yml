@@ -16,43 +16,80 @@
 - name: Creating database
   become: true
   become_user: "postgres"
+  loop: "{{ schemes }}"
   community.postgresql.postgresql_db:
-    name: "postgres"
+    name: "{{ item.name }}"
     encoding: 'UTF-8'
     login_unix_socket : "/var/run/postgresql"
     state: present
 
-- name: Creating schemas
-  loop: "{{ schemes }}"
-  become: true
-  become_user: "postgres"
-  community.postgresql.postgresql_schema:
-    database: "postgres"
-    name: "{{ item.name }}"
-    login_unix_socket : "/var/run/postgresql"
-    state: present
-
-- name: Creating users
+- name: Creating user
   loop: "{{ schemes }}"
   become: true
   become_user: "postgres"
   community.postgresql.postgresql_user:
-    db: "postgres"
+    db: "{{ item.name }}"
     name: "{{ item.username }}"
     password: "{{ item.password }}"
     login_unix_socket : "/var/run/postgresql"
     state: present
 
-- name: Setting user's privileges
+- name: Setting user's privileges on tables
   loop: "{{ schemes }}"
   become: true
   become_user: "postgres"
   community.postgresql.postgresql_privs:
-    database: "postgres"
+    database: "{{ item.name }}"
     role: "{{ item.username }}"
-    type: "schema"
+    type: "table"
     privs: "ALL"
-    objs: "{{ item.name }}"
+    objs: "ALL_IN_SCHEMA"
     login_unix_socket : "/var/run/postgresql"
     state: present
 
+- name: Setting user's privileges on sequences
+  loop: "{{ schemes }}"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_privs:
+    database: "{{ item.name }}"
+    role: "{{ item.username }}"
+    type: "sequence"
+    privs: "ALL"
+    objs: "ALL_IN_SCHEMA"
+    login_unix_socket : "/var/run/postgresql"
+    state: present
+
+- name: Setting user's privileges on functions
+  loop: "{{ schemes }}"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_privs:
+    database: "{{ item.name }}"
+    role: "{{ item.username }}"
+    type: "function"
+    privs: "ALL"
+    objs: "ALL_IN_SCHEMA"
+    login_unix_socket : "/var/run/postgresql"
+    state: present
+
+- name: Setting user's privileges on procedures
+  loop: "{{ schemes }}"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_privs:
+    database: "{{ item.name }}"
+    role: "{{ item.username }}"
+    type: "procedure"
+    privs: "ALL"
+    objs: "ALL_IN_SCHEMA"
+    login_unix_socket : "/var/run/postgresql"
+    state: present
+
+- name: Set default privileges on objects
+  community.postgresql.postgresql_privs:
+    database: "{{ item.name }}"
+    objs: table,sequence,function,procedure
+    privs: ALL
+    type: default_privs
+    role: "{{ item.username }}"
