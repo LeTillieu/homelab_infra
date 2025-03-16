@@ -8,20 +8,20 @@
     state: present
 
 - name: Creating database
-  community.postgresql.postgresql_db :
+  community.postgresql.postgresql_db:
     name: "postgres"
     encoding: 'UTF8'
     state: present
 
 - name: Creating schemas
-  with: "{{ schemes }}"
-  community.postgresql.postgresql_schema :
+  loop: "{{ schemes }}"
+  community.postgresql.postgresql_schema:
     database: "postgres"
     name: "{{ item.name }}"
     state: present
 
 - name: Creating users
-  with: "{{ schemes }}"
+  loop: "{{ schemes }}"
   community.postgresql.postgresql_user:
     db: "postgres"
     role: "{{ item.username }}"
@@ -29,7 +29,7 @@
     state: present
 
 - name: Setting user's privileges
-  with: "{{ schemes }}"
+  loop: "{{ schemes }}"
   community.postgresql.postgresql_privs:
     database: "postgres"
     role: "{{ item.username }}"
