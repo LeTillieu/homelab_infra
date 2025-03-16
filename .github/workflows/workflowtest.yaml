@@ -270,7 +270,7 @@ jobs:
           working-directory: ./ansible
           run:
             echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealedsecret_private.key
-            
+
         - name: Installing ansible and dependencies
           run: |
             apt update
@@ -294,6 +294,11 @@ jobs:
             ansible-playbook deploy_sealedsecrets.yml
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+
+        - name: continue on fail
+          run:
+            sleep 86400
+          if: failure()
     
         
               
