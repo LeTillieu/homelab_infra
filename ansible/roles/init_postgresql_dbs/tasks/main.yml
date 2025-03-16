@@ -18,6 +18,7 @@
   community.postgresql.postgresql_db:
     name: "postgres"
     encoding: 'UTF8'
+    login_unix_socket : "/var/run/postgresql"
     state: present
 
 - name: Creating schemas
@@ -26,6 +27,7 @@
   community.postgresql.postgresql_schema:
     database: "postgres"
     name: "{{ item.name }}"
+    login_unix_socket : "/var/run/postgresql"
     state: present
 
 - name: Creating users
@@ -35,6 +37,7 @@
     db: "postgres"
     role: "{{ item.username }}"
     password: "{{ item.username }}"
+    login_unix_socket : "/var/run/postgresql"
     state: present
 
 - name: Setting user's privileges
@@ -46,5 +49,6 @@
     type: "schema"
     privs: "ALL"
     objs: "{{ item.name }}"
+    login_unix_socket : "/var/run/postgresql"
     state: present
 

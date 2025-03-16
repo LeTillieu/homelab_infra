@@ -191,7 +191,7 @@ resource "proxmox_virtual_environment_vm" "ca-vm" {
   vm_id = 233
   name = "ca-terraform"
   description = "K8s node managed by terraform"
-  tags = ["terraform", "debian", "postgres","db"]
+  tags = ["terraform", "debian"]
   stop_on_destroy = true
   on_boot = false
   started = true
