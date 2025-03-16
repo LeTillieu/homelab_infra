@@ -4,7 +4,7 @@
 - name: Installing postgres
   become: true
   ansible.builtin.package:
-    name: postgres
+    name: postgresql
     state: present
 
 - name: Creating database
