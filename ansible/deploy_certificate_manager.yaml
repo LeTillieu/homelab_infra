@@ -6,6 +6,11 @@
     - name: Installing helm
       ansible.builtin.include_role:
         name: install_helm
+
+    - name: Install helm-diff
+      kubernetes.core.helm_plugin:
+        name: helm-diff
+        state: present
     
     - name: Adding jetstack repo
       kubernetes.core.helm_repository:

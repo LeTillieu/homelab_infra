@@ -197,11 +197,11 @@ jobs:
           run: |
             echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-        - name: Deploy cert-manager
+        - name: Deploy argocd
           working-directory: ./ansible
           run: |
             ansible-galaxy collection install kubernetes.core
-            ansible-playbook deploy_argocd.yaml"
+            ansible-playbook deploy_argocd.yaml
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         

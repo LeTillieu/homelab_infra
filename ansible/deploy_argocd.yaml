@@ -3,6 +3,15 @@
 - name: Deploying ArgoCD
   hosts: localhost
   tasks:
+    - name: Installing helm
+      ansible.builtin.include_role:
+        name: install_helm
+
+    - name: Install helm-diff
+      kubernetes.core.helm_plugin:
+        name: helm-diff
+        state: present
+  
     - name: Creating argocd namespace
       kubernetes.core.k8s:
         definition:
