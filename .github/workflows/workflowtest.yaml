@@ -303,6 +303,10 @@ jobs:
             ansible-playbook deploy_sealedsecrets.yml
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        - name: Keep running on failure
+          if: failure()
+          run:
+            sleep 86400
     
         
               
