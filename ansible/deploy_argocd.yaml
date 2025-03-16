@@ -81,9 +81,8 @@
             namespace: argocd
             annotations:
               nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
           spec:
-            ingressClassName: nginx
             rules:
             - http:
                 paths:
@@ -93,7 +92,7 @@
                     service:
                       name: argocd-server
                       port:
-                        name: http
+                        number: 80
               host: argocd.ltillieu.duckdns.org
             tls:
             - hosts:
