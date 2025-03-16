@@ -14,15 +14,17 @@
     state: present
 
 - name: Creating database
+  become: true
   become_user: "postgres"
   community.postgresql.postgresql_db:
     name: "postgres"
-    encoding: 'UTF8'
+    encoding: 'UTF-8'
     login_unix_socket : "/var/run/postgresql"
     state: present
 
 - name: Creating schemas
   loop: "{{ schemes }}"
+  become: true
   become_user: "postgres"
   community.postgresql.postgresql_schema:
     database: "postgres"
@@ -32,6 +34,7 @@
 
 - name: Creating users
   loop: "{{ schemes }}"
+  become: true
   become_user: "postgres"
   community.postgresql.postgresql_user:
     db: "postgres"
@@ -42,6 +45,7 @@
 
 - name: Setting user's privileges
   loop: "{{ schemes }}"
+  become: true
   become_user: "postgres"
   community.postgresql.postgresql_privs:
     database: "postgres"
