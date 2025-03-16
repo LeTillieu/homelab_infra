@@ -9,7 +9,7 @@
 
     - name: Install helm-diff
       kubernetes.core.helm_plugin:
-        name: helm-diff
+        plugin_path: https://github.com/databus23/helm-diff
         state: present
   
     - name: Creating argocd namespace
