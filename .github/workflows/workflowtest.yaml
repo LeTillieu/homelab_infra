@@ -53,9 +53,6 @@ jobs:
     #       # - name: Sleep for 5 minutes
     #       #   run: sleep 300
 
-    #       - name: Keep container running on failure
-    #         if: failure()
-    #         run: sleep infinity
 
     Install_k3s:
       name: Deploying K3S cluster
@@ -99,62 +96,57 @@ jobs:
           if: failure()
           run: sleep infinity
       
-    Setup_Postgresql:
-      name: Setting up postgresql
-      runs-on: self-hosted
-      needs: [Install_k3s]
-      container: 
-        image: "ubuntu:24.04"
+    # Setup_Postgresql:
+    #   name: Setting up postgresql
+    #   runs-on: self-hosted
+    #   needs: [Install_k3s]
+    #   container: 
+    #     image: "ubuntu:24.04"
       
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    #   steps:
+    #     - name: Checkout repository
+    #       uses: actions/checkout@v4
 
-        - name: Retreive KUBECONFIG
-          uses: actions/download-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/
+    #     - name: Retreive KUBECONFIG
+    #       uses: actions/download-artifact@v4
+    #       with:
+    #         name: KUBECONFIG
+    #         path: ~/
 
-        - name: Setting kubeconfig file
-          run: |
-            mv ~/k3s.yaml ~/.kube/config
-            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
+    #     - name: Setting kubeconfig file
+    #       run: |
+    #         mv ~/k3s.yaml ~/.kube/config
+    #         sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
 
-        - name: Installing ansible and dependencies
-          run: |
-            apt update
-            apt install -y pipx python3-requests ssh
-            pipx install --include-deps --force ansible
-            pipx inject ansible requests 
+    #     - name: Installing ansible and dependencies
+    #       run: |
+    #         apt update
+    #         apt install -y pipx python3-requests ssh
+    #         pipx install --include-deps --force ansible
+    #         pipx inject ansible requests 
         
-        - name: Update PATH
-          run: echo "/github/home/.local/bin" >> $GITHUB_PATH
+    #     - name: Update PATH
+    #       run: echo "/github/home/.local/bin" >> $GITHUB_PATH
   
-        - name: Set private Key file
-          working-directory: ./ansible
-          run: |
-            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+    #     - name: Set private Key file
+    #       working-directory: ./ansible
+    #       run: |
+    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
         
-        - name: Set vault password file
-          working-directory: ./ansible
-          run: |
-            echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
+    #     - name: Set vault password file
+    #       working-directory: ./ansible
+    #       run: |
+    #         echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
         
-        - name: Installing postgresql
-          working-directory: ./ansible
-          run: |
-            ansible-galaxy collection install community.postgresql
-            ansible-playbook setup_postgresql.yaml --vault-password-file ./vault_pass.txt
-          env:
-            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
-        
-        - name: Keep container running on failure
-          if: failure()
-          run: sleep infinity
-              
-
+    #     - name: Installing postgresql
+    #       working-directory: ./ansible
+    #       run: |
+    #         ansible-galaxy collection install community.postgresql
+    #         ansible-playbook setup_postgresql.yaml --vault-password-file ./vault_pass.txt
+    #       env:
+    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+                      
     # Install_cert_manager:
     #   name: Deploying cert-manager
     #   runs-on: self-hosted
@@ -205,10 +197,6 @@ jobs:
     #         ansible-playbook deploy_certificate_manager.yaml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
     #       env:
     #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
-        
-    #     - name: Keep container running on failure
-    #       if: failure()
-    #       run: sleep infinity
     
     # Install_ArgoCD:
     #   name: Deploying argocd
@@ -260,8 +248,60 @@ jobs:
     #         ansible-playbook deploy_argocd.yaml
     #       env:
     #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+    
+    Install_SealedSecrets:
+      name: Deploying cert-manager
+      runs-on: self-hosted
+      needs: [Install_k3s]
+      container: 
+        image: "ubuntu:24.04"
+      
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Installing kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: 'latest'
+
+        - name: Retreive KUBECONFIG
+          uses: actions/download-artifact@v4
+          with:
+            name: KUBECONFIG
+            path: ~/
+
+        - name: Setting kubeconfig file
+          run: |
+            mv ~/k3s.yaml ~/.kube/config
+            sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         
-    #     - name: Keep container running on failure
-    #       if: failure()
-    #       run: sleep infinity
+        - name: Settings sealedSecrets private key file
+          run:
+            echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealedsecret_private.key
+        - name: Installing ansible and dependencies
+          run: |
+            apt update
+            apt install -y pipx python3-requests ssh
+            pipx install --include-deps --force ansible
+            pipx inject ansible requests 
+            pipx inject ansible kubernetes
+        
+        - name: Update PATH
+          run: echo "/github/home/.local/bin" >> $GITHUB_PATH
+  
+        - name: Set private Key file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+        
+        - name: Deploy sealed secrets
+          working-directory: ./ansible
+          run: |
+            ansible-galaxy collection install kubernetes.core
+            ansible-playbook deploy_sealedsecrets.yaml
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+    
+        
               
