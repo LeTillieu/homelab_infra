@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for roles/create_postgresql_users
+schemes:
+  - name: mealie_db
+    username: mealie
+    password: "{{ mealie_password }}"

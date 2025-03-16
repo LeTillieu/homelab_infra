@@ -1,0 +1,14 @@
+---
+
+- name: Deploying ArgoCD
+  hosts: localhost
+  tasks:
+    - name: Install postgres
+      hosts: 'postgres'
+      gather_facts: true
+      tasks:
+        - name: Create postgresql dbs
+          ansible.builtin.include_role:
+            name: init_postgresql_dbs
+        
+        

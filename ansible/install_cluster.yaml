@@ -108,4 +108,4 @@
         path: /root/.bashrc
         line: "export  KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
         state: present
-     
+
