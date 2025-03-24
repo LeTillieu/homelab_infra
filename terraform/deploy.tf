@@ -90,7 +90,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
 # Create nodes
 resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
-  count = 4
+  count = 2
   node_name = "proxmox"
   vm_id = 210+count.index
   name = "k8s-node-terraform-${count.index}"
@@ -107,7 +107,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   }
 
   memory {
-    dedicated = 1024
+    dedicated = 5120
   }
 
   disk {
@@ -175,54 +175,6 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,230,"/24"])
-        gateway = join("",[var.k8s_cluster_network_prefix,"254"])
-      }
-    }
-    user_account {
-      keys = [var.terraform_allowed_key_public]
-      username = "terraform"
-    }
-  }
-}
-
-
-resource "proxmox_virtual_environment_vm" "ca-vm" {
-  node_name = "proxmox"
-  vm_id = 233
-  name = "ca-terraform"
-  description = "K8s node managed by terraform"
-  tags = ["terraform", "debian"]
-  stop_on_destroy = true
-  on_boot = false
-  started = true
-  keyboard_layout = "fr"
-
-  cpu {
-    cores        = 1
-    type         = "x86-64-v2-AES"
-  }
-
-  memory {
-    dedicated = 1024
-  }
-
-  disk {
-    datastore_id = "local-lvm"
-    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
-    interface    = "scsi0"
-    size         = 32
-  }
-
-  network_device {
-    model = "virtio"
-    bridge = "vmbr0"
-  }
-  serial_device {}
-
-  initialization {
-    ip_config {
-      ipv4 {
-        address = join("",[var.k8s_cluster_network_prefix,233,"/24"])
         gateway = join("",[var.k8s_cluster_network_prefix,"254"])
       }
     }
