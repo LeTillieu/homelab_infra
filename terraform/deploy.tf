@@ -102,7 +102,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   keyboard_layout = "fr"
 
   cpu {
-    cores        = 1
+    cores        = 5
     type         = "x86-64-v2-AES"
   }
 
