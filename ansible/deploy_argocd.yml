@@ -64,7 +64,7 @@
             namespace: argocd
           spec:
             dnsNames:
-            - 'argocd.ltillieu.duckdns.org'
+            - 'argo.ltillieu.duckdns.org'
             issuerRef:
               name: cert-manager-webhook-duckdns-staging
               kind: ClusterIssuer
@@ -93,8 +93,8 @@
                       name: argocd-server
                       port:
                         number: 80
-              host: argocd.ltillieu.duckdns.org
+              host: argo.ltillieu.duckdns.org
             tls:
             - hosts:
-              - argocd.ltillieu.duckdns.org
+              - argo.ltillieu.duckdns.org
               secretName: argocd-ssl-certificate
