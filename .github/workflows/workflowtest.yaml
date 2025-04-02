@@ -162,7 +162,7 @@ jobs:
 
         - name: Setting kubeconfig file
           run: |
-            mkdir ~/.kube/
+            [ -d '~/.kube/' ] || mkdir ~/.kube/
             mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
 
@@ -214,7 +214,7 @@ jobs:
 
         - name: Setting kubeconfig file
           run: |
-            mkdir ~/.kube/
+            [ -d '~/.kube/' ] || mkdir ~/.kube/
             mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
 
@@ -266,7 +266,7 @@ jobs:
 
         - name: Setting kubeconfig file
           run: |
-            mkdir ~/.kube/
+            [ -d '~/.kube/' ] || mkdir ~/.kube/
             mv ~/k3s.yaml ~/.kube/config
             sed -i 's/127.0.0.1/${{ secrets.K3S_PROXY_IP }}/g' ~/.kube/config
         
