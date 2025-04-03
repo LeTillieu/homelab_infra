@@ -1,6 +1,6 @@
 ---
 
-- name: Installing k3s
+- name: Install cert-manager
   hosts: localhost
   tasks:
     - name:  Installing git
@@ -57,7 +57,7 @@
         create_namespace: true
         set_values:
           - value:  crds.enabled=true
-          - value:  extraArgs={--dns01-recursive-nameservers-only,--dns01-recursive-nameservers=8.8.8.8:53\,1.1.1.1:53}
+          - value:  extraArgs={--dns01-recursive-nameservers=8.8.8.8:53\,1.1.1.1:53}
         release_state: present
         wait: true
         timeout: "5m"
