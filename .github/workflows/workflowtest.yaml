@@ -3,145 +3,145 @@ on:
   push:
   workflow_dispatch:
 jobs:
-    Deploy_VMs:
-        name: Deploying VMs
-        runs-on: self-hosted
-        container: 
-          image: "ubuntu:24.04"
-        steps:
-          - name: Install requierements
-            run: apt update && apt install -y unzip ca-certificates
+    # Deploy_VMs:
+    #     name: Deploying VMs
+    #     runs-on: self-hosted
+    #     container: 
+    #       image: "ubuntu:24.04"
+    #     steps:
+    #       - name: Install requierements
+    #         run: apt update && apt install -y unzip ca-certificates
         
-          - name: Setup node
-            uses: actions/setup-node@v4
-            with:
-              node-version: 22
+    #       - name: Setup node
+    #         uses: actions/setup-node@v4
+    #         with:
+    #           node-version: 22
               
-          - name: Checkout repository
-            uses: actions/checkout@v4
+    #       - name: Checkout repository
+    #         uses: actions/checkout@v4
 
-          - name: Setup Terraform
-            uses: hashicorp/setup-terraform@v3
-            with:
-              terraform_version: "1.11.1"
+    #       - name: Setup Terraform
+    #         uses: hashicorp/setup-terraform@v3
+    #         with:
+    #           terraform_version: "1.11.1"
 
-          - name: Authenticate to Google Cloud
-            working-directory: ./terraform
-            run: |
-              echo '${{ secrets.GCP_CONNECTION_FILE }}' > ./gcloud-key.json
+    #       - name: Authenticate to Google Cloud
+    #         working-directory: ./terraform
+    #         run: |
+    #           echo '${{ secrets.GCP_CONNECTION_FILE }}' > ./gcloud-key.json
       
-          - name: init terraform
-            working-directory: ./terraform
-            run:  terraform init
-            env: 
-              GOOGLE_APPLICATION_CREDENTIALS: './gcloud-key.json'
+    #       - name: init terraform
+    #         working-directory: ./terraform
+    #         run:  terraform init
+    #         env: 
+    #           GOOGLE_APPLICATION_CREDENTIALS: './gcloud-key.json'
           
-          - name: Apply terraform
-            working-directory: ./terraform
-            run: |
-              terraform apply -auto-approve
-            env: 
-              TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
-              TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
-              TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
-              TF_VAR_proxmox_ip: ${{secrets.PROXMOX_IP}}
-              TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
-              TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
-              TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
-              TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
-              GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
-              TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
+    #       - name: Apply terraform
+    #         working-directory: ./terraform
+    #         run: |
+    #           terraform apply -auto-approve
+    #         env: 
+    #           TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
+    #           TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
+    #           TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+    #           TF_VAR_proxmox_ip: ${{secrets.PROXMOX_IP}}
+    #           TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
+    #           TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
+    #           TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
+    #           TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
+    #           GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
+    #           TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
           
-          # - name: Sleep for 5 minutes
-          #   run: sleep 300
+    #       # - name: Sleep for 5 minutes
+    #       #   run: sleep 300
 
 
-    Install_k3s:
-      name: Deploying K3S cluster
-      runs-on: self-hosted
-      needs: [Deploy_VMs]
-      container: 
-        image: "ubuntu:24.04"
+    # Install_k3s:
+    #   name: Deploying K3S cluster
+    #   runs-on: self-hosted
+    #   needs: [Deploy_VMs]
+    #   container: 
+    #     image: "ubuntu:24.04"
       
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    #   steps:
+    #     - name: Checkout repository
+    #       uses: actions/checkout@v4
 
-        - name: Installing ansible and dependencies
-          run: apt update && apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests 
+    #     - name: Installing ansible and dependencies
+    #       run: apt update && apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests 
         
-        - name: Update PATH
-          run: echo "/github/home/.local/bin" >> $GITHUB_PATH
+    #     - name: Update PATH
+    #       run: echo "/github/home/.local/bin" >> $GITHUB_PATH
   
         
-        - name: Set private Key file
-          working-directory: ./ansible
-          run: |
-            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+    #     - name: Set private Key file
+    #       working-directory: ./ansible
+    #       run: |
+    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-        - name: Install cluster
-          working-directory: ./ansible
-          run: ansible-playbook install_cluster.yml -e k3s_proxy_server="${{secrets.K3S_PROXY_IP}}"
-          env:
-            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+    #     - name: Install cluster
+    #       working-directory: ./ansible
+    #       run: ansible-playbook install_cluster.yml -e k3s_proxy_server="${{secrets.K3S_PROXY_IP}}"
+    #       env:
+    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
-        - name: Saving KUBECONFIG
-          uses: actions/upload-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/k3s.yaml
-            if-no-files-found: error
-            retention-days: 1
-            overwrite: true
+    #     - name: Saving KUBECONFIG
+    #       uses: actions/upload-artifact@v4
+    #       with:
+    #         name: KUBECONFIG
+    #         path: ~/k3s.yaml
+    #         if-no-files-found: error
+    #         retention-days: 1
+    #         overwrite: true
 
-        - name: Keep container running on failure
-          if: failure()
-          run: sleep infinity
+    #     - name: Keep container running on failure
+    #       if: failure()
+    #       run: sleep infinity
       
-    Setup_Postgresql:
-      name: Setting up postgresql
-      runs-on: self-hosted
-      needs: [Install_k3s]
-      container: 
-        image: "ubuntu:24.04"
+    # Setup_Postgresql:
+    #   name: Setting up postgresql
+    #   runs-on: self-hosted
+    #   needs: [Install_k3s]
+    #   container: 
+    #     image: "ubuntu:24.04"
       
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    #   steps:
+    #     - name: Checkout repository
+    #       uses: actions/checkout@v4
 
-        - name: Installing ansible and dependencies
-          run: |
-            apt update
-            apt install -y pipx python3-requests ssh
-            pipx install --include-deps --force ansible
-            pipx inject ansible requests 
+    #     - name: Installing ansible and dependencies
+    #       run: |
+    #         apt update
+    #         apt install -y pipx python3-requests ssh
+    #         pipx install --include-deps --force ansible
+    #         pipx inject ansible requests 
         
-        - name: Update PATH
-          run: echo "/github/home/.local/bin" >> $GITHUB_PATH
+    #     - name: Update PATH
+    #       run: echo "/github/home/.local/bin" >> $GITHUB_PATH
   
-        - name: Set private Key file
-          working-directory: ./ansible
-          run: |
-            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+    #     - name: Set private Key file
+    #       working-directory: ./ansible
+    #       run: |
+    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
         
-        - name: Set vault password file
-          working-directory: ./ansible
-          run: |
-            echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
+    #     - name: Set vault password file
+    #       working-directory: ./ansible
+    #       run: |
+    #         echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
         
-        - name: Installing postgresql
-          working-directory: ./ansible
-          run: |
-            ansible-galaxy collection install community.postgresql
-            ansible-playbook setup_postgresql.yml --vault-password-file ./vault_pass.txt
-          env:
-            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+    #     - name: Installing postgresql
+    #       working-directory: ./ansible
+    #       run: |
+    #         ansible-galaxy collection install community.postgresql
+    #         ansible-playbook setup_postgresql.yml --vault-password-file ./vault_pass.txt
+    #       env:
+    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
                       
     Install_cert_manager:
       name: Deploying cert-manager
       runs-on: self-hosted
-      needs: [Install_k3s]
+      # needs: [Install_k3s]
       container: 
         image: "ubuntu:24.04"
       
