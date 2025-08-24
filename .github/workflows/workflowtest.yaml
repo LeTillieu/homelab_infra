@@ -54,6 +54,10 @@ jobs:
           
           # - name: Sleep for 5 minutes
           #   run: sleep 300
+          - name: continue on fail
+            run:
+              sleep infinity
+            if: failure()
 
 
     Install_k3s:
@@ -301,7 +305,7 @@ jobs:
 
         - name: continue on fail
           run:
-            sleep 86400
+            sleep infinity
           if: failure()
     
         
