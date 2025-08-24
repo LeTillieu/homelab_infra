@@ -10,7 +10,7 @@ jobs:
           image: "node:22-bullseye"
         steps:
           - name: Install requierements
-            run: sudo apt update && sudo apt install -y unzip ca-certificates tar git xz-utils
+            run: apt update && apt install -y unzip ca-certificates tar git xz-utils
         
           #- name: Setup node
            # uses: actions/setup-node@v4
