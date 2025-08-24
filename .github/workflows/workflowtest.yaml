@@ -6,8 +6,6 @@ jobs:
     Deploy_VMs:
         name: Deploying VMs
         runs-on: self-hosted
-        container: 
-          image: "node:22-bullseye"
         steps:
           - name: Install requierements
             run: apt update && apt install -y unzip ca-certificates tar git xz-utils
