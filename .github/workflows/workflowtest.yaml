@@ -7,7 +7,7 @@ jobs:
         name: Deploying VMs
         runs-on: self-hosted
         container: 
-          image: "ubuntu:24.04"
+          image: "ghcr.io/actions/actions-runner:latest"
         steps:
           - name: Install requierements
             run: apt update && apt install -y unzip ca-certificates tar git xz-utils
