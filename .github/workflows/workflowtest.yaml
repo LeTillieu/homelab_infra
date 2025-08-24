@@ -8,7 +8,7 @@ jobs:
         runs-on: self-hosted
         steps:
           - name: Install requierements
-            run: apt update && apt install -y unzip ca-certificates tar git xz-utils
+            run: sudo apt update && sudo apt install -y unzip ca-certificates tar git xz-utils
         
           #- name: Setup node
            # uses: actions/setup-node@v4
