@@ -12,10 +12,10 @@ jobs:
           - name: Install requierements
             run: apt update && apt install -y unzip ca-certificates
         
-          - name: Setup node
-            uses: actions/setup-node@v4
-            with:
-              node-version: 22.x
+         # - name: Setup node
+          #  uses: actions/setup-node@v4
+           # with:
+            #  node-version: 22.x
               
           - name: Checkout repository
             uses: actions/checkout@v4
