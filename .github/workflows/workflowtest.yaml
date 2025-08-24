@@ -7,7 +7,7 @@ jobs:
         name: Deploying VMs
         runs-on: self-hosted
         container: 
-          image: "docker/github-actions:v1"
+          image: "ubuntu:24.x"
         steps:
           - name: Install requierements
             run: apt update && apt install -y unzip ca-certificates tar git xz-utils
