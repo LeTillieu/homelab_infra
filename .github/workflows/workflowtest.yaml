@@ -1,5 +1,5 @@
 name: Test GitHub
-on: [push]
+on: [push, workflow_dispatch]
 jobs:
     Deploy_VMs:
         name: Deploying VMs
