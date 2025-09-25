@@ -7,9 +7,6 @@ jobs:
         name: Deploying VMs
         runs-on: self-hosted
         steps:
-          - name: Install requierements
-            run: apt update && apt install -y unzip ca-certificates tar git xz-utils wget
-        
           - name: Setup node
             uses: actions/setup-node@v4
             with:
