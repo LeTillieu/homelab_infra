@@ -15,8 +15,7 @@ jobs:
           - name: Setup node
             uses: actions/setup-node@v4
             with:
-              node-version: 22.x
-              token: ${{ secrets.GH_TOKEN }}
+              node-version: 20.x
               
           - name: Checkout repository
             uses: actions/checkout@v4
