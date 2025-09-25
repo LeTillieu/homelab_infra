@@ -23,7 +23,7 @@ jobs:
           - name: Authenticate to Google Cloud
             working-directory: ./terraform
             run: |
-              echo '${{ secrets.GCP_CONNECTION_FILE }}' > ./gcloud-key.json
+              echo '${{ secrets.GCP_CONNECTION_FILE }}' | base64 --decode > ./gcloud-key.json
       
           - name: init terraform
             working-directory: ./terraform
