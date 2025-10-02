@@ -74,6 +74,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
   }
 
   initialization {
+    datastore_id = 'local'
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,200+count.index,"/24"])
@@ -124,6 +125,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   serial_device {}
 
   initialization {
+    datastore_id = 'local'
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,210+count.index,"/24"])
@@ -172,6 +174,7 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
   serial_device {}
 
   initialization {
+    datastore_id = 'local'
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,230,"/24"])
