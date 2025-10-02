@@ -4,7 +4,7 @@
   tasks:
     - name: Generating token
       ansible.builtin.set_fact:
-        k3s_token: "{{ lookup('community.general.random_string',length=32, chars=ascii_letters,min_special=1, override_special='?!;:.~()[]&%*') }}"
+        k3s_token: "{{ lookup('community.general.random_string',length=32, min_special=1, override_special='?!;:.~()[]&%*') }}"
 - name: Installing k3s
   hosts: k3s
   tasks:
