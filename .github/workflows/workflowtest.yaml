@@ -68,7 +68,7 @@ jobs:
           run: sudo apt update && sudo apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests && pipx ensurepath
         
         - name: Update PATH
-          run: source /home/github/.bashrc
+          run: echo "$HOME/.local/bin" >> $GITHUB_PATH
   
         
         - name: Set private Key file
