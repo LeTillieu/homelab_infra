@@ -59,9 +59,7 @@ jobs:
       name: Deploying K3S cluster
       runs-on: self-hosted
       needs: [Deploy_VMs]
-      container: 
-        image: "ubuntu:24.04"
-      
+     
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
@@ -101,8 +99,6 @@ jobs:
       name: Setting up postgresql
       runs-on: self-hosted
       needs: [Install_k3s]
-      container: 
-        image: "ubuntu:24.04"
       
       steps:
         - name: Checkout repository
@@ -141,8 +137,6 @@ jobs:
       name: Deploying cert-manager
       runs-on: self-hosted
       needs: [Install_k3s]
-      container: 
-        image: "ubuntu:24.04"
       
       steps:
         - name: Checkout repository
@@ -193,9 +187,7 @@ jobs:
       name: Deploying argocd
       runs-on: self-hosted
       needs: [Install_cert_manager]
-      container: 
-        image: "ubuntu:24.04"
-      
+
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
@@ -245,8 +237,6 @@ jobs:
       name: Deploying Sealedsecrets
       runs-on: self-hosted
       needs: [Install_k3s]
-      container: 
-        image: "ubuntu:24.04"
       
       steps:
         - name: Checkout repository
