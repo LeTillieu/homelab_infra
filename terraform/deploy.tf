@@ -60,7 +60,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = "vmstore"
     file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
     interface    = "scsi0"
     size         = 32
@@ -111,7 +111,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = "vmstore"
     file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
     interface    = "scsi0"
     size         = 32
@@ -159,7 +159,7 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = "vmstore"
     file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
     interface    = "scsi0"
     size         = 32
