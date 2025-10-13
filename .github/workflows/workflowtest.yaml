@@ -34,7 +34,7 @@ jobs:
           - name: Apply terraform
             working-directory: ./terraform
             run: |
-              terraform apply -auto-approve
+              terraform apply -auto-approve -parallelism=1
             env: 
               TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
               TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
@@ -46,9 +46,10 @@ jobs:
               TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
               GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
               TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
+                      
+          - name: Sleep for 5 minutes
+            run: sleep 300
           
-          # - name: Sleep for 5 minutes
-          #   run: sleep 300
           - name: continue on fail
             run:
               sleep infinity
