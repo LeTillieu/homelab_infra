@@ -108,7 +108,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   }
 
   memory {
-    dedicated = 2048
+    dedicated = 5120
   }
 
   disk {
