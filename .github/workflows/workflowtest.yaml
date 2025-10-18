@@ -112,6 +112,7 @@ jobs:
             pipx install --include-deps --force ansible
             pipx inject ansible requests 
             pipx ensurepath
+            ansible-galaxy collection install community.general
         
         - name: Update PATH
           run: echo "/github/home/.local/bin" >> $GITHUB_PATH
