@@ -81,7 +81,7 @@
     
     
 - name: Init cluster
-  hosts: "{{ groups['k8s_server'][0] }}"
+  hosts: "{{ groups['k8s_controlplane'][0] }}"
   become: true
   tasks:
     - name: Check if a cluster is already installed
@@ -111,12 +111,12 @@
       when: join_cluster_certificate.rc != 0
 
 - name: Join controlplanes to cluster
-  hosts: "{{ groups['k8s_server'][1:] }}"
+  hosts: "{{ groups['k8s_controlplane'][1:] }}"
   become: true
   tasks:
     - name: Join controlplane
       ansible.builtin.command:
-        cmd: "{{ hostvars[groups[''k8s_server''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups[''k8s_server''][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
+        cmd: "{{ hostvars[groups[''k8s_controlplane''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups[''k8s_controlplane''][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
 
 - name: Join worker nodes to cluster
   hosts: "{{ groups['k8s_node'] }}"
@@ -124,5 +124,5 @@
   tasks:
     - name: Join worker
       ansible.builtin.command:
-        cmd: "{{ hostvars[groups[''k8s_server''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
+        cmd: "{{ hostvars[groups[''k8s_controlplane''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
 

@@ -44,7 +44,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
   vm_id = 200+count.index
   name = "k8s-ctrlplane-terraform-${count.index}"
   description = "K8sctrlplane managed by terraform"
-  tags = ["terraform", "debian", "k8s_controlplance","k8s"]
+  tags = ["terraform", "debian", "k8s_controlplane","k8s"]
   stop_on_destroy = true
   on_boot = false
   started = true
