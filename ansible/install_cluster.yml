@@ -60,7 +60,7 @@
         state: restarted
         enabled: true
     - name: Set kubernetes gpg key
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: 'curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg'
     - name: Add kubernetes repo
       ansible.builtin.lineinfile:
