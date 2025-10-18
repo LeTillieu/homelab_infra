@@ -118,7 +118,12 @@
   hosts: "{{ groups['k8s_controlplane'][1:] }}"
   become: true
   tasks:
+    - name: Check if a cluster is already installed
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: cluster_exists
     - name: Join controlplane
+      when: not cluster_exists.stat.exists
       ansible.builtin.command:
         cmd: "{{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
 
@@ -126,7 +131,12 @@
   hosts: "{{ groups['k8s_node'] }}"
   become: true
   tasks:
+    - name: Check if a cluster is already installed
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: cluster_exists
     - name: Join worker
+      when: not cluster_exists.stat.exists
       ansible.builtin.command:
         cmd: "{{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
 
