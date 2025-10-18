@@ -133,7 +133,7 @@
   tasks:
     - name: Check if a cluster is already installed
       ansible.builtin.stat:
-        path: /etc/kubernetes/admin.conf
+        path: /etc/kubernetes/kubelet.conf
       register: cluster_exists
     - name: Join worker
       when: not cluster_exists.stat.exists
