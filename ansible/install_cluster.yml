@@ -103,11 +103,11 @@
     
     - name: Fails if cant get join command
       ansible.builtin.fail:
-      msg: "Impossible to retreive command to join the cluster"
+        msg: "Impossible to retreive command to join the cluster"
       when: join_cluster_command.rc != 0
     - name: Fails if cant get join command
       ansible.builtin.fail:
-      msg: "Impossible to retreive certificates to join the cluster"
+        msg: "Impossible to retreive certificates to join the cluster"
       when: join_cluster_certificate.rc != 0
 
 - name: Join controlplanes to cluster
