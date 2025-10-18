@@ -85,7 +85,7 @@
   become: true
   tasks:
     - name: Check if a cluster is already installed
-      ansible.builin.stat:
+      ansible.builtin.stat:
         path: /etc/kubernetes/admin.conf
       register: cluster_exists
     - name: Init cluster
