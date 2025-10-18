@@ -65,7 +65,7 @@
     - name: Add kubernetes repo
       ansible.builtin.lineinfile:
         path: /etc/apt/sources.list.d/kubernetes.list
-        line: "eb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"  
+        line: "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"  
         create: true
     - name: Refresh repos
       ansible.builtin.apt:
