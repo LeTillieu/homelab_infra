@@ -118,9 +118,12 @@
   hosts: "{{ groups['k8s_controlplane'][1:] }}"
   become: true
   tasks:
+    - name: debug
+      ansible.builtin.debug:
+        var: hostvars[groups['k8s_controlplane'][0]]
     - name: Join controlplane
       ansible.builtin.command:
-        cmd: "{{ hostvars[groups[''k8s_controlplane''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups[''k8s_controlplane''][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
+        cmd: "{{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
 
 - name: Join worker nodes to cluster
   hosts: "{{ groups['k8s_node'] }}"
@@ -128,5 +131,5 @@
   tasks:
     - name: Join worker
       ansible.builtin.command:
-        cmd: "{{ hostvars[groups[''k8s_controlplane''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
+        cmd: "{{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
 
