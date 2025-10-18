@@ -1,6 +1,6 @@
 ---
 - name: Install requierements on all vm
-  hosts: k8
+  hosts: k8s
   become: true
   tasks:
     - name: Install required packages
