@@ -1,111 +1,128 @@
 ---
-- name: Generating k3s token
-  hosts: localhost
+- name: Install requierements on all vm
+  hosts: k8
+  become: true
   tasks:
-    - name: Generating token
-      ansible.builtin.set_fact:
-        k3s_token: "{{ lookup('community.general.random_string',length=32, min_special=1, override_special='?!;:.~()[]&%*') }}"
-- name: Installing k3s
-  hosts: k3s
-  tasks:
-    - name: Downloading k3s install script
-      ansible.builtin.get_url:
-        mode: u=rwx,g=rx,o=
-        dest: /tmp/install_k3s.sh
-        url: https://get.k3s.io
-
-- name: Installing first master
-  hosts: "{{ groups['k3s_server'][0] }}"
-  tasks:
-    - name: Check if k3s is already installed
-      register: k3s_installed
-      ansible.builtin.stat:
-        path: /etc/rancher/k3s/k3s.yaml
-
-    - name: Installing k3s
-      changed_when: false # to improve
-      ansible.builtin.command:
-        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute --tls-san={{ k3s_proxy_server }}"
-      environment:
-        INSTALL_K3S_EXEC: "server"
-        K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
-        K3S_CLUSTER_INIT: true
-      when: not k3s_installed.stat.exists
-    - name: Save KUBECONFIG file
-      become: true
-      ansible.builtin.fetch:
-        src: /etc/rancher/k3s/k3s.yaml
-        dest: ~/k3s.yaml
-        flat: true
-
-
-- name: Installing masters
-  hosts: "{{ groups['k3s_server'][1:] }}"
-  gather_facts: true
-  tasks:
-    - name: Check if k3s is already installed
-      register: k3s_installed
-      ansible.builtin.stat:
-        path: /etc/rancher/k3s/k3s.yaml
-
-    - name: Installing k3s
-      changed_when: false #to improve
-      ansible.builtin.command:
-        cmd: "/tmp/install_k3s.sh --node-taint CriticalAddonsOnly=true:NoExecute --tls-san={{ k3s_proxy_server }}"
-      environment:
-        INSTALL_K3S_EXEC: "server"
-        K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
-        K3S_URL: "https://{{ k3s_proxy_server }}:6443"
-      when: not k3s_installed.stat.exists
-
-- name: Installing agents
-  hosts: k3s_node
-  gather_facts: true
-  tasks:
-    - name: Check if k3s is already installed
-      register: k3s_installed
-      ansible.builtin.stat:
-        path: /etc/rancher/k3s/k3s.yaml
-
-    - name: Installing k3s
-      changed_when: false #to improve
-      ansible.builtin.command:
-        cmd: /tmp/install_k3s.sh
-      environment:
-        INSTALL_K3S_EXEC: "agent"
-        K3S_TOKEN: "{{ hostvars['localhost']['k3s_token'] }}"
-        K3S_URL: "https://{{ k3s_proxy_server }}:6443"
-      when: not k3s_installed.stat.exists
-
-    - name: Installing nfs-common
-      become: true
+    - name: Install required packages
       ansible.builtin.package:
-        name: nfs-common
         state: present
-- name: Installing k9s
-  hosts: 'k3s_server'
-  tasks:
-    - name: Check if k9s is already installed
-      register: k9s_installed
-      ansible.builtin.stat:
-        path: /usr/bin/k9s
-
-    - name: Downloading k9s deb file
+        name: "{{ item }}"
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+        - software-properties-common
+    - name: Disable swap for current session
+      ansible.builtin.shell:
+        cmd: swapoff -a
+    - name: Disable swap for next sessions
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: ^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+        replace: '#\1\2\3swap\4'
+    - name: Load required kernel modules
+      community.general.modprobe:
+        name: "{{ item }}"
+        persistent: present
+        state: present
+      loop:
+        - overlay
+        - br_netfilter
+    - name: Set network parameters
+      ansible.posix.sysctl:
+        state: present
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/kubernetes.conf
+        reload: true
+      loop:
+        - { name: 'net.bridge.bridge-nf-call-ip6tables', value: 1 }
+        - { name: 'net.bridge.bridge-nf-call-iptables',  value: 1 }
+        - { name: 'net.ipv4.ip_forward',                 value: 1 }
+    - name: Install containerd
+      ansible.builtin.package:
+        state: present
+        name: containerd
+    - name: create containerd config directory
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+    - name: Copy containerd config file
+      ansible.builtin.copy:
+        src: ./files/containerd.toml
+        dest: /etc/containerd/config.toml
+    - name: restart containerd service
+      ansible.builtin.systemd_service:
+        name: containerd
+        state: restarted
+        enabled: true
+    - name: Download kubernetes gpg key
       ansible.builtin.get_url:
-        url: https://github.com/derailed/k9s/releases/download/v0.40.5/k9s_linux_amd64.deb
-        dest: /tmp/k9s_linux_amd64.deb
-      when: not k9s_installed.stat.exists
-
-    - name: Installaling k9s
-      become: true
-      ansible.builtin.apt:
-        deb: /tmp/k9s_linux_amd64.deb
-      when: not k9s_installed.stat.exists
-
-    - name: Configuring k9s
-      become: true
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        dest: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+    - name: Add kubernetes repo
       ansible.builtin.lineinfile:
-        path: /root/.bashrc
-        line: "export  KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
+        path: /etc/apt/sources.list.d/kubernetes.list
+        line: "eb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"  
+        create: true
+    - name: Refresh repos
+      ansible.builtin.apt:
+        update_cache: true
+    - name: Install kubernetes packages
+      ansible.builtin.package:
+        name: "{{ item }}"
         state: present
+      loop:
+        - kubelet
+        - kubeadm
+        - kubectl
+    
+    
+- name: Init cluster
+  hosts: "{{ groups['k8s_server'][0] }}"
+  become: true
+  tasks:
+    - name: Check if a cluster is already installed
+      ansible.builin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: cluster_exists
+    - name: Init cluster
+      when: not cluster_exists.stat.exists
+      ansible.builtin.command:
+        cmd: "kubeadm init --control-plane-endpoint {{ k8s_loadbalancer_ip }} --pod-network-cidr=10.244.0.0/16"
+    - name: Get join cluster command
+      ansible.builtin.command:
+        cmd: "kubeadm token create --print-join-command"
+      register: join_cluster_command
+    - name: Get cluster certificates
+      ansible.builtin.command:
+        cmd: "kubeadm init phase upload-certs --upload-certs"
+      register: join_cluster_certificate
+    
+    - name: Fails if cant get join command
+      ansible.builtin.fail:
+      msg: "Impossible to retreive command to join the cluster"
+      when: join_cluster_command.rc != 0
+    - name: Fails if cant get join command
+      ansible.builtin.fail:
+      msg: "Impossible to retreive certificates to join the cluster"
+      when: join_cluster_certificate.rc != 0
+
+- name: Join controlplanes to cluster
+  hosts: "{{ groups['k8s_server'][1:] }}"
+  tasks:
+    - name: Join controlplane
+      ansible.builtin.command:
+        cmd: "{{ hostvars[groups[''k8s_server''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups[''k8s_server''][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
+
+
+- name: Join worker nodes to cluster
+  hosts: "{{ groups['k8s_node'] }}"
+  tasks:
+    - name: Join worker
+      name: Join controlplane
+      ansible.builtin.command:
+        cmd: "{{ hostvars[groups[''k8s_server''][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
 
