@@ -91,7 +91,7 @@
     - name: Init cluster
       when: not cluster_exists.stat.exists
       ansible.builtin.command:
-        cmd: "kubeadm init --control-plane-endpoint {{ k8s_loadbalancer_ip }} --pod-network-cidr=10.244.0.0/16"
+        cmd: "kubeadm init --control-plane-endpoint {{ k8s_loadbalancer_ip }} --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU"
     - name: Get join cluster command
       ansible.builtin.command:
         cmd: "kubeadm token create --print-join-command"
