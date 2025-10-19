@@ -82,7 +82,7 @@
         - kubelet
         - kubeadm
         - kubectl
-    
+  
     
 - name: Init cluster
   hosts: "{{ groups['k8s_controlplane'][0] }}"
@@ -96,6 +96,11 @@
       when: not cluster_exists.stat.exists
       ansible.builtin.command:
         cmd: "kubeadm init --control-plane-endpoint {{ k8s_loadbalancer_ip }} --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU"
+    - name: Copy kubernetes config file
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: root/.kube/config
     - name: Get join cluster command
       ansible.builtin.command:
         cmd: "kubeadm token create --print-join-command"
@@ -126,6 +131,15 @@
       when: not cluster_exists.stat.exists
       ansible.builtin.command:
         cmd: "{{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU --control-plane --certificate-key {{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_certificate'].stdout_lines[-1] }}" 
+    - name: Create .kube directory
+      ansible.builtin.file:
+        path: /root/.kube/
+        state: present
+    - name: Copy kubernetes config file
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: root/.kube/config
 
 - name: Join worker nodes to cluster
   hosts: "{{ groups['k8s_node'] }}"
@@ -139,4 +153,29 @@
       when: not cluster_exists.stat.exists
       ansible.builtin.command:
         cmd: "{{ hostvars[groups['k8s_controlplane'][0]]['join_cluster_command'].stdout }} --ignore-preflight-errors=NumCPU" 
+
+- name: Install helm on controlplane
+  hosts: "{{ groups['k8s_controlplane'] }}"
+  become: true
+  tasks:
+    - name: Remove helm gpg key
+      ansible.builtin.file:
+        path: /usr/share/keyrings/helm.gpg
+        state: absent
+    - name: Set helm gpg key
+      ansible.builtin.command:
+        cmd: 'curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg '
+    - name: Add helm repo
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/helm-stable-debian.list
+        line: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"  
+        create: true 
+    - name: Refresh repos
+      ansible.builtin.apt:
+        update_cache: true
+    - name: Install helm packages
+      ansible.builtin.package:
+        name: "helm"
+        state: present
+
 
