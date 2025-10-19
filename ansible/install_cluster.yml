@@ -143,6 +143,10 @@
       ansible.builtin.fail:
         msg: "Impossible to retreive certificates to join the cluster"
       when: join_cluster_certificate.rc != 0
+    - name: Retreive admin.conf
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: ~/k8s.yaml
 
 - name: Join controlplanes to cluster
   hosts: "{{ groups['k8s_controlplane'][1:] }}"
@@ -254,7 +258,6 @@
       kubernetes.core.k8s:
         src: /tmp/longhorn-service.yaml
         state: present
-
         
 
 

@@ -3,30 +3,30 @@
 - name: Install cert-manager
   hosts: localhost
   tasks:
-    - name:  Installing git
+    - name: Installing git
       become: true
       ansible.builtin.package:
         name: git
         state: present
 
-    - name:  Installing make
+    - name: Installing make
       become: true
       ansible.builtin.package:
         name: make
         state: present
-    
-    - name:  Installing curl
+
+    - name: Installing curl
       become: true
       ansible.builtin.package:
         name: curl
         state: present
-    
-    - name:  Installing docker
+
+    - name: Installing docker
       become: true
       ansible.builtin.package:
         name: docker.io
         state: present
-        
+
     - name: Installing helm
       ansible.builtin.include_role:
         name: install_helm
@@ -35,7 +35,7 @@
       kubernetes.core.helm_plugin:
         plugin_path: https://github.com/databus23/helm-diff
         state: present
-    
+
     - name: Adding jetstack repo
       kubernetes.core.helm_repository:
         name: jetstack
@@ -56,23 +56,23 @@
         release_namespace: cert-manager
         create_namespace: true
         set_values:
-          - value:  crds.enabled=true
+          - value: crds.enabled=true
           - value: 'extraArgs={--dns01-recursive-nameservers=8.8.8.8:53\,1.1.1.1:53}'
         release_state: present
         wait: true
         timeout: "5m"
-        
+
     - name: Cloning cert-manager-webhook-duckdns repo
       ansible.builtin.git:
         repo: https://github.com/ebrianne/cert-manager-webhook-duckdns.git
         dest: /tmp/cert-manager-webhook-duckdns
         force: true
-    
+
     - name: Building cert-manager-webhook-duckdns
-      ansible.builtin.make:
+      community.general.make:
         chdir: /tmp/cert-manager-webhook-duckdns
         target: build
-    
+
     - name: Installing cert-manager-webhook-duckdns
       kubernetes.core.helm:
         name: cert-manager-webhook-duckdns
@@ -88,6 +88,3 @@
           - value: clusterIssuer.staging.create=true
           - value: clusterIssuer.email="{{ duckdns_email }}"
           - value: logLevel=2
-      
-      
-

@@ -1,2 +1,3 @@
 terraform/.terraform
 ansible/ansible_venv
+.ansible/.lock
