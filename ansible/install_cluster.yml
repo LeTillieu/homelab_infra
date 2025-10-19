@@ -168,7 +168,7 @@
         state: absent
     - name: Set helm gpg key
       ansible.builtin.shell:
-        cmd: 'curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg '
+        cmd: 'curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor -o /usr/share/keyrings/helm.gpg '
     - name: Add helm repo
       ansible.builtin.lineinfile:
         path: /etc/apt/sources.list.d/helm-stable-debian.list
