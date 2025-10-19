@@ -86,7 +86,7 @@
         create: true
       loop:
         - {'line': 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /', 'path': '/etc/apt/sources.list.d/kubernetes.list'}
-        - {'line': 'deb https://debian.griffo.io/apt trixie main', 'path': '/etc/apt/sources.list.d/debian.griffo.io.list'}
+        - {'line': 'deb https://debian.griffo.io/apt bookworm main', 'path': '/etc/apt/sources.list.d/debian.griffo.io.list'}
     - name: Refresh repos
       ansible.builtin.apt:
         update_cache: true
