@@ -99,7 +99,7 @@
     - name: Create .kube directory
       ansible.builtin.file:
         path: /root/.kube/
-        state: present
+        state: directory
     - name: Copy kubernetes config file
       ansible.builtin.copy:
         remote_src: true
@@ -138,7 +138,7 @@
     - name: Create .kube directory
       ansible.builtin.file:
         path: /root/.kube/
-        state: present
+        state: directory
     - name: Copy kubernetes config file
       ansible.builtin.copy:
         remote_src: true

@@ -49,11 +49,7 @@ jobs:
           # TODO: uncomment 
           # - name: Sleep for 5 minutes
           #   run: sleep 300
-          
-          - name: continue on fail
-            run:
-              sleep infinity
-            if: failure()
+  
 
 
     Install_k8s:
@@ -91,10 +87,6 @@ jobs:
             if-no-files-found: error
             retention-days: 1
             overwrite: true
-
-        - name: Keep container running on failure
-          if: failure()
-          run: sleep infinity
       
     Setup_Postgresql:
       name: Setting up postgresql
