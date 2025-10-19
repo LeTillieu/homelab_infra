@@ -1,9 +1,10 @@
 ---
 
 - name: Deploying ArgoCD
-  hosts: localhost
+  hosts: "{{ groups['k8s_controlplane'][0] }}"
+  become: true
   tasks:
-    - name:  Installing git
+    - name: Installing git
       become: true
       ansible.builtin.package:
         name: git

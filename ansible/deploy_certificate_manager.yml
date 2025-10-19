@@ -1,7 +1,8 @@
 ---
 
 - name: Install cert-manager
-  hosts: localhost
+  hosts: "{{ groups['k8s_controlplane'][0] }}"
+  become: true
   tasks:
     - name: Installing git
       become: true

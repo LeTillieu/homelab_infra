@@ -79,14 +79,6 @@ jobs:
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
-        - name: Saving KUBECONFIG
-          uses: actions/upload-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/k8s.yaml
-            if-no-files-found: error
-            retention-days: 1
-            overwrite: true
       
     # Setup_Postgresql:
     #   name: Setting up postgresql
@@ -137,21 +129,6 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Installing kubectl
-          uses: azure/setup-kubectl@v4
-          with:
-            version: 'latest'
-
-        - name: Retreive KUBECONFIG
-          uses: actions/download-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/
-
-        - name: Setting kubeconfig file
-          run: |
-            mkdir -p ~/.kube/
-            mv ~/k3s.yaml ~/.kube/config
 
         - name: Installing ansible and dependencies
           run: |
@@ -187,22 +164,6 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Installing kubectl
-          uses: azure/setup-kubectl@v4
-          with:
-            version: 'latest'
-
-        - name: Retreive KUBECONFIG
-          uses: actions/download-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/
-
-        - name: Setting kubeconfig file
-          run: |
-            mkdir -p ~/.kube/
-            mv ~/k3s.yaml ~/.kube/config
-
         - name: Installing ansible and dependencies
           run: |
             sudo apt update
@@ -237,22 +198,6 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Installing kubectl
-          uses: azure/setup-kubectl@v4
-          with:
-            version: 'latest'
-
-        - name: Retreive KUBECONFIG
-          uses: actions/download-artifact@v4
-          with:
-            name: KUBECONFIG
-            path: ~/
-
-        - name: Setting kubeconfig file
-          run: |
-            mkdir -p ~/.kube/
-            mv ~/k3s.yaml ~/.kube/config
-        
         - name: Settings sealedSecrets private key file
           working-directory: ./ansible
           run:
