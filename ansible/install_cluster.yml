@@ -65,18 +65,28 @@
         name: containerd
         state: restarted
         enabled: true
-    - name: delete kubernetes gpg key
+    - name: delete gpg key
       ansible.builtin.file:
-        path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        path: "{{ item }}"
         state: absent
-    - name: Set kubernetes gpg key
+      loop:
+        - /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        - /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
+    - name: Add gpg keys
       ansible.builtin.shell:
-        cmd: 'curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg'
-    - name: Add kubernetes repo
+        cmd: "curl -fsSL {{ item.url }} | sudo gpg --dearmor -o {{ item.path }}"
+      loop:
+        - {"url": "https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key", "path": "/etc/apt/keyrings/kubernetes-apt-keyring.gpg"}
+        - {"url": "https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc", "path": "/etc/apt/trusted.gpg.d/debian.griffo.io.gpg"}
+
+    - name: Add repos
       ansible.builtin.lineinfile:
-        path: /etc/apt/sources.list.d/kubernetes.list
-        line: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /"  
+        path: "{{ item.path }}"
+        line: "{{ item.line }}"  
         create: true
+      loop:
+        - {'line': 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /', 'path': '/etc/apt/sources.list.d/kubernetes.list'}
+        - {'line': 'deb https://debian.griffo.io/apt trixie main', 'path': '/etc/apt/sources.list.d/debian.griffo.io.list'}
     - name: Refresh repos
       ansible.builtin.apt:
         update_cache: true
@@ -88,6 +98,11 @@
         - kubelet
         - kubeadm
         - kubectl
+    - name: Install ghostty
+      ansible.builtin.package:
+        name: "ghostty"
+        state: present
+    
   
     
 - name: Init cluster
