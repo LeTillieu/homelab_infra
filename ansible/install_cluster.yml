@@ -15,6 +15,12 @@
         - lsb-release
         - software-properties-common
         - gpg
+        - open-iscsi
+    - name: Start and enable iscsid
+      ansible.builtin.systemd:
+        name: iscsid
+        state: started
+        enabled: true
     - name: Disable swap for current session
       ansible.builtin.shell:
         cmd: swapoff -a
