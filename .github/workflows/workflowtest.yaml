@@ -56,7 +56,7 @@ jobs:
             if: failure()
 
 
-    Install_k3s:
+    Install_k8s:
       name: Deploying K3S cluster
       runs-on: self-hosted
       needs: [Deploy_VMs]
@@ -99,7 +99,7 @@ jobs:
     Setup_Postgresql:
       name: Setting up postgresql
       runs-on: self-hosted
-      needs: [Install_k3s]
+      needs: [Install_k8s]
       
       steps:
         - name: Checkout repository
@@ -139,7 +139,7 @@ jobs:
     # Install_cert_manager:
     #   name: Deploying cert-manager
     #   runs-on: self-hosted
-    #   needs: [Install_k3s]
+    #   needs: [Install_k8s]
       
     #   steps:
     #     - name: Checkout repository
@@ -241,7 +241,7 @@ jobs:
     # Install_SealedSecrets:
     #   name: Deploying Sealedsecrets
     #   runs-on: self-hosted
-    #   needs: [Install_k3s]
+    #   needs: [Install_k8s]
       
     #   steps:
     #     - name: Checkout repository
