@@ -231,6 +231,14 @@
       loop:
         - /tmp/kube-flannel.yml
         - /tmp/longhorn.yaml
+    - name: copy longhorn service manifests
+      ansible.builtin.copy:
+        src: ./files/longhorn-service.yaml
+        dest: /tmp/longhorn-service.yaml
+    - name: Apply longhorn service manifests
+      kubernetes.core.k8s:
+        src: /tmp/longhorn-service.yaml
+        state: present
 
         
 
