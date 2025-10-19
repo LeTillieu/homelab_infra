@@ -182,4 +182,25 @@
         name: "helm"
         state: present
 
+- name: Install required manifests
+  hosts: "{{ groups['k8s_controlplane'][0] }}"
+  become: true
+  tasks:
+    - name: Download manifests
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.path }}"
+      loop:
+        - {"url": "https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml", "path": "/tmp/kube-flannel.yml"}
+        - {"url": "https://raw.githubusercontent.com/longhorn/longhorn/v1.10.0/deploy/longhorn.yaml", "path": "/tmp/longhorn.yaml"}
+    - name: Apply manifests
+      kubernetes.core.k8s:
+        src: "{{ item }}"
+        state: present
+      loop:
+        - /tmp/kube-flannel.yml
+        - /tmp/longhorn.yaml
+
+        
+
 
