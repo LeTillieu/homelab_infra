@@ -3,6 +3,8 @@
 - name: Deploying ArgoCD
   hosts: "{{ groups['k8s_controlplane'][0] }}"
   become: true
+  vars:
+    ansible_python_interpreter: /opt/ansible_venv/bin/python3
   tasks:
     - name: Installing git
       become: true
