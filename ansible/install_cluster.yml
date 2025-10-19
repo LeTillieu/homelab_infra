@@ -182,9 +182,34 @@
         name: "helm"
         state: present
 
+- name: Configure controlplanes to work with kubernetes modules
+  hosts: "{{ groups['k8s_controlplane'] }}"
+  become: true
+  tasks:
+    - name: Install dependencies
+      ansible.builtin.package:
+        name: python3-venv
+    - name: Create python venv
+      ansible.builtin.command:
+        cmd: python3 -m venv /opt/ansible_venv
+        creates: /opt/ansible_venv/bin/activate
+    - name: Install pip modules
+      ansible.builtin.pip:
+        state: present
+        name: "{{ item }}"
+        virtualenv: "/opt/ansible_venv"
+      loop:
+        - kubernetes
+        - jsonpatch
+        - pyyaml
+
+
+
 - name: Install required manifests
   hosts: "{{ groups['k8s_controlplane'][0] }}"
   become: true
+  vars:
+    ansible_python_interpreter: /opt/ansible_venv/bin/python3
   tasks:
     - name: Download manifests
       ansible.builtin.get_url:
