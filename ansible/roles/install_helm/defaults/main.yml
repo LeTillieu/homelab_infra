@@ -1,4 +1,0 @@
----
-helm_version: "v3.17.2"  # Specify the Helm version you want to install (default: v3.9.1)
-helm_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
-helm_install_path: "/usr/local/bin/helm"

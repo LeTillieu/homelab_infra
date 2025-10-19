@@ -9,10 +9,6 @@
       ansible.builtin.package:
         name: git
         state: present
-        
-    - name: Installing helm
-      ansible.builtin.include_role:
-        name: install_helm
 
     - name: Install helm-diff
       kubernetes.core.helm_plugin:
