@@ -40,7 +40,7 @@ resource "proxmox_virtual_environment_download_file" "debian-12-generic-amd64-da
 resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
   content_type = "snippets"
   datastore_id = "local"
-  node_name    = "pve"
+  node_name    = "proxmox"
 
   source_raw {
     data = <<-EOF
