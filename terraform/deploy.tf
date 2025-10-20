@@ -37,6 +37,25 @@ resource "proxmox_virtual_environment_download_file" "debian-12-generic-amd64-da
 }
 
 
+resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
+  content_type = "snippets"
+  datastore_id = "local"
+  node_name    = "pve"
+
+  source_raw {
+    data = <<-EOF
+    users:
+      - name: terraform
+      - ssh-authorized-keys:
+          - var.terraform_allowed_key_public
+    runcmd:
+        - timedatectl set-timezone Europe/Paris
+    EOF
+
+    file_name = "user-data-cloud-config.yaml"
+  }
+}
+
 # Create control plane VM
 resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
   node_name = "proxmox"
@@ -75,16 +94,12 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
   initialization {
     datastore_id = "local"
-    timezone = "Europe/Paris"
+    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,200+count.index,"/24"])
         gateway = join("",[var.k8s_cluster_network_prefix,"254"])
       }
-    }
-    user_account {
-      keys = [var.terraform_allowed_key_public]
-      username = "terraform"
     }
   }
 }
@@ -127,16 +142,12 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
 
   initialization {
     datastore_id = "local"
-    timezone = "Europe/Paris"
+    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,210+count.index,"/24"])
         gateway = join("",[var.k8s_cluster_network_prefix,"254"])
       }
-    }
-    user_account {
-      keys = [var.terraform_allowed_key_public]
-      username = "terraform"
     }
   }
 }
@@ -177,16 +188,12 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
 
   initialization {
     datastore_id = "local"
-    timezone = "Europe/Paris"
+    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
     ip_config {
       ipv4 {
         address = join("",[var.k8s_cluster_network_prefix,230,"/24"])
         gateway = join("",[var.k8s_cluster_network_prefix,"254"])
       }
-    }
-    user_account {
-      keys = [var.terraform_allowed_key_public]
-      username = "terraform"
     }
   }
 }
