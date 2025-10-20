@@ -3,6 +3,9 @@
   hosts: k8s
   become: true
   tasks:
+    - name: Refresh repos
+      ansible.builtin.apt:
+        update_cache: true
     - name: Install required packages
       ansible.builtin.package:
         state: present
