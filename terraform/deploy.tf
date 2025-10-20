@@ -44,6 +44,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
 
   source_raw {
     data = <<-EOF
+    #cloud-config
     users:
       - name: terraform
         sudo: ALL=(ALL) NOPASSWD:ALL
@@ -51,9 +52,9 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
         ssh_authorized_keys:
           - ${var.terraform_allowed_key_public}
         passwd: "$6$rounds=4096$PfmrsIoDIq.6wceA$NEDJOi/JWAGCRi/rBSB7mCkv8kFQVa6AfrQrVhkLW1z6f/KWAkqsJhC/3xAFYAbiLJ7x2yUT7Qo61uW2wrJW5."
-        ssh_pwauth: true
+    ssh_pwauth: true
     runcmd:
-        - timedatectl set-timezone Europe/Paris
+      - timedatectl set-timezone Europe/Paris
     EOF
 
     file_name = "user-data-cloud-config.yaml"
