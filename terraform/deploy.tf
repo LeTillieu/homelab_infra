@@ -48,6 +48,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       - name: terraform
         ssh-authorized-keys:
           - ${var.terraform_allowed_key_public}
+        passwd: $6$rounds=4096$IBl4dahPfCczofu5$EqOpT1YpCrRDmbJJ.dVsi0bblOicG9KtRmd4hK34GS8sqEBsLXicdUU8UlujQ8.h2AZvzKKogBSuB9Ul3x2a40
     runcmd:
         - timedatectl set-timezone Europe/Paris
     EOF
