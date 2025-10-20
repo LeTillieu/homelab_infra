@@ -25,10 +25,10 @@ provider "proxmox" {
   }
 }
 
-resource "proxmox_virtual_environment_download_file" "debian-12-generic-amd64-daily-20250214-2023" {
+resource "proxmox_virtual_environment_download_file" "debian-12-genericcloud-amd64-20250210-2019" {
   content_type       = "iso"
   datastore_id       = "local"
-  file_name          = "debian-12-generic-amd64-daily-20250214-2023.img"
+  file_name          = "debian-12-genericcloud-amd64-20250210-2019.img"
   node_name          = "proxmox"
   url                = var.debian_url
   checksum           = var.debian_sha512
@@ -80,7 +80,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
   disk {
     datastore_id = "vmstore"
-    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
+    file_id      = proxmox_virtual_environment_download_file.debian-12-genericcloud-amd64-20250210-2019.id
     interface    = "scsi0"
     size         = 32
   }
@@ -129,7 +129,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
 
   disk {
     datastore_id = "vmstore"
-    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
+    file_id      = proxmox_virtual_environment_download_file.debian-12-genericcloud-amd64-20250210-2019.id
     interface    = "scsi0"
     size         = 32
   }
@@ -175,7 +175,7 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
 
   disk {
     datastore_id = "vmstore"
-    file_id      = proxmox_virtual_environment_download_file.debian-12-generic-amd64-daily-20250214-2023.id
+    file_id      = proxmox_virtual_environment_download_file.debian-12-genericcloud-amd64-20250210-2019.id
     interface    = "scsi0"
     size         = 32
   }
