@@ -79,6 +79,7 @@
             name: argocd-server-http-ingress
             namespace: argocd
           spec:
+            ingressClassName: nginx
             rules:
             - http:
                 paths:
