@@ -78,9 +78,6 @@
           metadata:
             name: argocd-server-http-ingress
             namespace: argocd
-            annotations:
-              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
           spec:
             rules:
             - http:
@@ -91,7 +88,7 @@
                     service:
                       name: argocd-server
                       port:
-                        name: http
+                        number: 80
               host: argo.ltillieu.duckdns.org
             tls:
             - hosts:
