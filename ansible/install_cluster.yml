@@ -254,6 +254,12 @@
       kubernetes.core.k8s:
         src: /tmp/longhorn-service.yaml
         state: present
+    - name: Install nginx ingress
+      kubernetes.core.helm:
+        release_name: ingress-nginx
+        release_namespace: ingress-nginx
+        create_namespace: true
+        chart_repo_url: https://kubernetes.github.io/ingress-nginx
         
 
 
