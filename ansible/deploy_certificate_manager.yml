@@ -61,16 +61,25 @@
         wait: true
         timeout: "5m"
 
+    - name: Check if cert-manager-webhook-duckdns Helm release exists
+      kubernetes.core.helm_info:
+        name: cert-manager-webhook-duckdns
+        release_namespace: cert-manager
+      register: duckdns_release
+      ignore_errors: true
+
     - name: Cloning cert-manager-webhook-duckdns repo
       ansible.builtin.git:
         repo: https://github.com/ebrianne/cert-manager-webhook-duckdns.git
         dest: /tmp/cert-manager-webhook-duckdns
         force: true
+      when: duckdns_release.failed or duckdns_release.status is undefined or or duckdns_release.status is "FAILED"
 
     - name: Building cert-manager-webhook-duckdns
       community.general.make:
         chdir: /tmp/cert-manager-webhook-duckdns
         target: build
+      when: duckdns_release.failed or duckdns_release.status is undefined or or duckdns_release.status is "FAILED"
 
     - name: Installing cert-manager-webhook-duckdns
       kubernetes.core.helm:
@@ -87,3 +96,4 @@
           - value: clusterIssuer.staging.create=true
           - value: clusterIssuer.email="{{ duckdns_email }}"
           - value: logLevel=2
+      when: duckdns_release.failed or duckdns_release.status is undefined or or duckdns_release.status is "FAILED"
