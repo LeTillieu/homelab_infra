@@ -73,13 +73,13 @@
         repo: https://github.com/ebrianne/cert-manager-webhook-duckdns.git
         dest: /tmp/cert-manager-webhook-duckdns
         force: true
-      when: duckdns_release.failed or duckdns_release.status is undefined or duckdns_release.status is "FAILED"
+      when: duckdns_release.failed or duckdns_release.status is undefined or duckdns_release.status == "FAILED"
 
     - name: Building cert-manager-webhook-duckdns
       community.general.make:
         chdir: /tmp/cert-manager-webhook-duckdns
         target: build
-      when: duckdns_release.failed or duckdns_release.status is undefined or duckdns_release.status is "FAILED"
+      when: duckdns_release.failed or duckdns_release.status is undefined or duckdns_release.status == "FAILED"
 
     - name: Installing cert-manager-webhook-duckdns
       kubernetes.core.helm:
@@ -96,4 +96,4 @@
           - value: clusterIssuer.staging.create=true
           - value: clusterIssuer.email="{{ duckdns_email }}"
           - value: logLevel=2
-      when: duckdns_release.failed or duckdns_release.status is undefined or duckdns_release.status is "FAILED"
+      when: duckdns_release.failed or duckdns_release.status is undefined or duckdns_release.status == "FAILED"
