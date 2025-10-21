@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/LeTillieu/homelab_apps
+    repoURL: git@github.com:LeTillieu/homelab_apps.git
     targetRevision: HEAD
     path: n8n
     directory:
@@ -15,5 +15,5 @@ spec:
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
-      enable: true
+      enabled: true
       prune: true
