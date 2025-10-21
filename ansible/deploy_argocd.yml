@@ -95,14 +95,16 @@
             - hosts:
               - argo.ltillieu.duckdns.org
               secretName: argocd-ssl-certificate
+    
     - name: copy argocd config files
       ansible.builtin.copy:
-        src: ./files/argocd
+        src: ./files/argocd/
         dest: /tmp/argocd_config_files/
+  
     - name: Deploy yamls to argocd
       kubernetes.core.k8s:
         state: present
-        src: /tmp/argocd_config_files/{{ item }}
+        src: "/tmp/argocd_config_files/{{ item }}"
       loop:
         - repo.yaml
         - n8n.yaml
