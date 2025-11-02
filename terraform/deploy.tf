@@ -110,7 +110,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
 # Create nodes
 resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
-  count = 1
+  count = 0
   node_name = "proxmox"
   vm_id = 210+count.index
   name = "k8s-node-terraform-${count.index}"
@@ -158,6 +158,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
 
 resource "proxmox_virtual_environment_vm" "postgres-vm" {
   node_name = "proxmox"
+  count = 0
   vm_id = 231
   name = "postgres-terraform"
   description = "K8s node managed by terraform"
