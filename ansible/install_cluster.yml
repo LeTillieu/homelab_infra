@@ -20,7 +20,6 @@
         - curl
         - gnupg
         - lsb-release
-        - software-properties-common
         - gpg
         - open-iscsi
     - name: Start and enable iscsid
