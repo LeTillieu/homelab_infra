@@ -21,6 +21,7 @@
         - gnupg
         - lsb-release
         - gpg
+        - sudo
         - open-iscsi
     - name: Start and enable iscsid
       ansible.builtin.systemd:
