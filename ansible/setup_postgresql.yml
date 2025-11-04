@@ -4,10 +4,8 @@
   hosts: 'postgres'
   gather_facts: true
   vars:
-      no_logging: no
+    no_logging: false
   tasks:
     - name: Create postgresql dbs
       ansible.builtin.include_role:
         name: init_postgresql_dbs
-        
-        

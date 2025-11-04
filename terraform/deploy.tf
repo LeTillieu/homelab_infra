@@ -158,7 +158,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
 
 resource "proxmox_virtual_environment_vm" "postgres-vm" {
   node_name = "proxmox"
-  count = 0
+  count = 1
   vm_id = 231
   name = "postgres-terraform"
   description = "K8s node managed by terraform"
@@ -174,7 +174,7 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
   }
 
   memory {
-    dedicated = 2048
+    dedicated = 1024
   }
 
   disk {

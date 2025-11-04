@@ -232,6 +232,48 @@
         - pyyaml
 
 
+- name: Configure all nodes
+  hosts: k8s
+  become: true
+  tasks:
+    - name: Enable serverTLSBootstrap in kubeconfig
+      ansible.builtin.lineinfile:
+        path: /var/lib/kubelet/config.yaml
+        regexp: '^\s*serverTLSBootstrap\s*:'
+        line: 'serverTLSBootstrap: true'
+        state: present
+    - name: Restart kubelet
+      ansible.builtin.service:
+        name: kubelet
+        state: restarted
+
+- name: Sign CSR
+  hosts: "{{ groups['k8s_controlplane'][0] }}"
+  become: true
+  vars:
+    ansible_python_interpreter: /opt/ansible_venv/bin/python3
+  tasks:
+    - name: Retreive all csr
+      kubernetes.core.k8s_info:
+        api_version: certificates.k8s.io/v1
+        kind: CertificateSigningRequest
+      register: csr_info
+    - name: Filtrer les to keep only pending csr
+      ansible.builtin.set_fact:
+        pending_csrs: >-
+          {{ csr_info.resources
+             | selectattr('status.conditions', 'undefined')
+             | map(attribute='metadata.name')
+             | list }}
+
+    - name: Afficher la liste des CSR en attente
+      debug:
+        msg: "CSRs en attente : {{ pending_csrs | join(', ') if pending_csrs else 'Aucune CSR en attente' }}"
+    - name: Approved pending CSR
+      when: pending_csrs | length > 0
+      loop: "{{ pending_csrs }}"
+      ansible.builtin.command:
+        cmd: "kubectl certificate approve {{ item }}"
 
 - name: Install required manifests
   hosts: "{{ groups['k8s_controlplane'][0] }}"
@@ -246,6 +288,7 @@
       loop:
         - {"url": "https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml", "path": "/tmp/kube-flannel.yml"}
         - {"url": "https://raw.githubusercontent.com/longhorn/longhorn/v1.10.0/deploy/longhorn.yaml", "path": "/tmp/longhorn.yaml"}
+        - {"url": "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml", "path": "/tmp/metrics-server.yaml"}
     - name: Apply manifests
       kubernetes.core.k8s:
         src: "{{ item }}"
@@ -253,6 +296,7 @@
       loop:
         - /tmp/kube-flannel.yml
         - /tmp/longhorn.yaml
+        - /tmp/metrics-server.yaml
     - name: copy longhorn service manifests
       ansible.builtin.copy:
         src: ./files/longhorn-service.yaml
@@ -268,6 +312,5 @@
         chart_ref: ingress-nginx
         create_namespace: true
         chart_repo_url: https://kubernetes.github.io/ingress-nginx
-        
 
 

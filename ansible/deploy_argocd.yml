@@ -108,3 +108,5 @@
       loop:
         - repo.yaml
         - n8n.yaml
+        - argocd_users.yaml
+        - argocd_roles.yaml

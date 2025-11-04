@@ -80,45 +80,45 @@ jobs:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
       
-    # Setup_Postgresql:
-    #   name: Setting up postgresql
-    #   runs-on: self-hosted
-    #   needs: [Install_k8s]
+    Setup_Postgresql:
+      name: Setting up postgresql
+      runs-on: self-hosted
+      needs: [Install_k8s]
       
-    #   steps:
-    #     - name: Checkout repository
-    #       uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-    #     - name: Installing ansible and dependencies
-    #       run: |
-    #         sudo apt update
-    #         sudo apt install -y pipx python3-requests ssh
-    #         pipx install --include-deps --force ansible
-    #         pipx inject ansible requests 
-    #         pipx ensurepath
-    #         ansible-galaxy collection install community.general
+        - name: Installing ansible and dependencies
+          run: |
+            sudo apt update
+            sudo apt install -y pipx python3-requests ssh
+            pipx install --include-deps --force ansible
+            pipx inject ansible requests 
+            pipx ensurepath
+            ansible-galaxy collection install community.general
         
-    #     - name: Update PATH
-    #       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        - name: Update PATH
+          run: echo "$HOME/.local/bin" >> $GITHUB_PATH
   
-    #     - name: Set private Key file
-    #       working-directory: ./ansible
-    #       run: |
-    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+        - name: Set private Key file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
         
-    #     - name: Set vault password file
-    #       working-directory: ./ansible
-    #       run: |
-    #         echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
+        - name: Set vault password file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > vault_pass.txt && chmod 700 ansible_private_key
         
-    #     - name: Installing postgresql
-    #       working-directory: ./ansible
-    #       run: |
-    #         ansible-galaxy collection install community.postgresql
-    #         ansible-playbook setup_postgresql.yml --vault-password-file ./vault_pass.txt
-    #       env:
-    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        - name: Installing postgresql
+          working-directory: ./ansible
+          run: |
+            ansible-galaxy collection install community.postgresql
+            ansible-playbook setup_postgresql.yml --vault-password-file ./vault_pass.txt
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
                       
     Install_cert_manager:
       name: Deploying cert-manager
