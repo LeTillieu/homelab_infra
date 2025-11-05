@@ -11,6 +11,24 @@
     name: postgresql
     state: present
 
+- name: Allow remote connection
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/15/main/postgresql.conf
+    line: "listen_addresses = '{{ postgres_server }}'"
+
+- name: Set password encryption method
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/15/main/postgresql.conf
+    line: 'password_encryption = scram-sha-256'
+
+- name: Allow remote connection
+  loop: "{{ schemes }}"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/15/main/pg_hba.conf
+    line: "host {{ item.name }} {{item.username}} {{ postgres_server }}/24 scram-sha-256"
 - name: Installing python3-psycopg2
   become: true
   ansible.builtin.package:
@@ -24,7 +42,7 @@
   community.postgresql.postgresql_db:
     name: "{{ item.name }}"
     encoding: 'UTF-8'
-    login_unix_socket : "/var/run/postgresql"
+    login_unix_socket: "/var/run/postgresql"
     state: present
 
 - name: Creating user
@@ -35,7 +53,7 @@
     db: "{{ item.name }}"
     name: "{{ item.username }}"
     password: "{{ item.password }}"
-    login_unix_socket : "/var/run/postgresql"
+    login_unix_socket: "/var/run/postgresql"
     state: present
 
 - name: Setting user's privileges on tables
@@ -48,7 +66,7 @@
     type: "table"
     privs: "ALL"
     objs: "ALL_IN_SCHEMA"
-    login_unix_socket : "/var/run/postgresql"
+    login_unix_socket: "/var/run/postgresql"
     state: present
 
 - name: Setting user's privileges on sequences
@@ -61,7 +79,7 @@
     type: "sequence"
     privs: "ALL"
     objs: "ALL_IN_SCHEMA"
-    login_unix_socket : "/var/run/postgresql"
+    login_unix_socket: "/var/run/postgresql"
     state: present
 
 - name: Setting user's privileges on functions
@@ -74,7 +92,7 @@
     type: "function"
     privs: "ALL"
     objs: "ALL_IN_SCHEMA"
-    login_unix_socket : "/var/run/postgresql"
+    login_unix_socket: "/var/run/postgresql"
     state: present
 
 - name: Setting user's privileges on procedures
@@ -87,7 +105,7 @@
     type: "procedure"
     privs: "ALL"
     objs: "ALL_IN_SCHEMA"
-    login_unix_socket : "/var/run/postgresql"
+    login_unix_socket: "/var/run/postgresql"
     state: present
 
 - name: Set default privileges on objects
@@ -101,3 +119,25 @@
     type: default_privs
     role: "{{ item.username }}"
     grant_option: true
+    login_unix_socket: "/var/run/postgresql"
+
+- name: Set default privileges on database
+  loop: "{{ schemes }}"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_privs:
+    database: "{{ item.name }}"
+    privs: ALL
+    type: database
+    role: "{{ item.username }}"
+    login_unix_socket: "/var/run/postgresql"
+
+- name: Change ownership of schema public to the user
+  become: true
+  become_user: "postgres"
+  loop: "{{ schemes }}"
+  community.postgresql.postgresql_owner:
+    login_db: "{{ item.name }}"
+    type: schema
+    obj_name: public
+    new_owner: "{{ item.username }}"
