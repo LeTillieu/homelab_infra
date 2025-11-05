@@ -3,87 +3,87 @@ on:
   push:
   workflow_dispatch:
 jobs:
-    # Deploy_VMs:
-    #     name: Deploying VMs
-    #     runs-on: self-hosted
-    #     steps:
-    #       - name: Setup node
-    #         uses: actions/setup-node@v4
-    #         with:
-    #           node-version: 20.x
+    Deploy_VMs:
+        name: Deploying VMs
+        runs-on: self-hosted
+        steps:
+          - name: Setup node
+            uses: actions/setup-node@v4
+            with:
+              node-version: 20.x
               
-    #       - name: Checkout repository
-    #         uses: actions/checkout@v4
+          - name: Checkout repository
+            uses: actions/checkout@v4
 
-    #       - name: Setup Terraform
-    #         uses: hashicorp/setup-terraform@v3
-    #         with:
-    #           terraform_version: "1.11.1"
+          - name: Setup Terraform
+            uses: hashicorp/setup-terraform@v3
+            with:
+              terraform_version: "1.11.1"
 
-    #       - name: Authenticate to Google Cloud
-    #         working-directory: ./terraform
-    #         run: |
-    #           echo '${{ secrets.GCP_CONNECTION_FILE }}' > ./gcloud-key.json
+          - name: Authenticate to Google Cloud
+            working-directory: ./terraform
+            run: |
+              echo '${{ secrets.GCP_CONNECTION_FILE }}' > ./gcloud-key.json
       
-    #       - name: init terraform
-    #         working-directory: ./terraform
-    #         run:  terraform init
-    #         env: 
-    #           GOOGLE_APPLICATION_CREDENTIALS: './gcloud-key.json'
+          - name: init terraform
+            working-directory: ./terraform
+            run:  terraform init
+            env: 
+              GOOGLE_APPLICATION_CREDENTIALS: './gcloud-key.json'
           
-    #       - name: Apply terraform
-    #         working-directory: ./terraform
-    #         run: |
-    #           terraform apply -auto-approve -parallelism=1
-    #         env: 
-    #           TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
-    #           TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
-    #           TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
-    #           TF_VAR_proxmox_ip: ${{secrets.PROXMOX_IP}}
-    #           TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
-    #           TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
-    #           TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
-    #           TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
-    #           GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
-    #           TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
-    #       # TODO: uncomment 
-    #       # - name: Sleep for 5 minutes
-    #       #   run: sleep 300
+          - name: Apply terraform
+            working-directory: ./terraform
+            run: |
+              terraform apply -auto-approve -parallelism=1
+            env: 
+              TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
+              TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
+              TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+              TF_VAR_proxmox_ip: ${{secrets.PROXMOX_IP}}
+              TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
+              TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
+              TF_VAR_debian_sha512: ${{vars.DEBIAN_SHA512}}
+              TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
+              GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
+              TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
+          # TODO: uncomment 
+          # - name: Sleep for 5 minutes
+          #   run: sleep 300
   
 
 
-    # Install_k8s:
-    #   name: Deploying K3S cluster
-    #   runs-on: self-hosted
-    #   needs: [Deploy_VMs]
+    Install_k8s:
+      name: Deploying K3S cluster
+      runs-on: self-hosted
+      needs: [Deploy_VMs]
      
-    #   steps:
-    #     - name: Checkout repository
-    #       uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-    #     - name: Installing ansible and dependencies
-    #       run: sudo apt update && sudo apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests
+        - name: Installing ansible and dependencies
+          run: sudo apt update && sudo apt install -y pipx python3-requests ssh && pipx install --include-deps --force ansible && pipx inject ansible requests
         
-    #     - name: Update PATH
-    #       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        - name: Update PATH
+          run: echo "$HOME/.local/bin" >> $GITHUB_PATH
   
         
-    #     - name: Set private Key file
-    #       working-directory: ./ansible
-    #       run: |
-    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+        - name: Set private Key file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-    #     - name: Install cluster
-    #       working-directory: ./ansible
-    #       run: ansible-playbook install_cluster.yml -e k8s_loadbalancer_ip="${{secrets.K8S_LOADBALANCER_IP}}"
-    #       env:
-    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        - name: Install cluster
+          working-directory: ./ansible
+          run: ansible-playbook install_cluster.yml -e k8s_loadbalancer_ip="${{secrets.K8S_LOADBALANCER_IP}}"
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
       
     Setup_Postgresql:
       name: Setting up postgresql
       runs-on: self-hosted
-      # needs: [Install_k8s]
+      needs: [Install_k8s]
       
       steps:
         - name: Checkout repository
@@ -119,118 +119,112 @@ jobs:
           env:
             proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
                       
-    # Install_cert_manager:
-    #   name: Deploying cert-manager
-    #   runs-on: self-hosted
-    #   needs: [Install_k8s]
+    Install_cert_manager:
+      name: Deploying cert-manager
+      runs-on: self-hosted
+      needs: [Install_k8s]
       
-    #   steps:
-    #     - name: Checkout repository
-    #       uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
 
-    #     - name: Installing ansible and dependencies
-    #       run: |
-    #         sudo apt update
-    #         sudo apt install -y pipx python3-requests ssh
-    #         pipx install --include-deps --force ansible
-    #         pipx inject ansible requests 
-    #         pipx inject ansible kubernetes
-    #         pipx ensurepath
+        - name: Installing ansible and dependencies
+          run: |
+            sudo apt update
+            sudo apt install -y pipx python3-requests ssh
+            pipx install --include-deps --force ansible
+            pipx inject ansible requests 
+            pipx inject ansible kubernetes
+            pipx ensurepath
         
-    #     - name: Update PATH
-    #       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        - name: Update PATH
+          run: echo "$HOME/.local/bin" >> $GITHUB_PATH
   
-    #     - name: Set private Key file
-    #       working-directory: ./ansible
-    #       run: |
-    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+        - name: Set private Key file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-    #     - name: Deploy cert-manager
-    #       working-directory: ./ansible
-    #       run: |
-    #         ansible-galaxy collection install kubernetes.core
-    #         ansible-playbook deploy_certificate_manager.yml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
-    #       env:
-    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        - name: Deploy cert-manager
+          working-directory: ./ansible
+          run: |
+            ansible-galaxy collection install kubernetes.core
+            ansible-playbook deploy_certificate_manager.yml -e duckdns_token="${{secrets.DUCKDNS_TOKEN}}" -e duckdns_email="${{vars.DUCKDNS_EMAIL}}"
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
-    # Install_ArgoCD:
-    #   name: Deploying argocd
-    #   runs-on: self-hosted
-    #   needs: [Install_cert_manager]
+    Install_ArgoCD:
+      name: Deploying argocd
+      runs-on: self-hosted
+      needs: [Install_cert_manager]
 
-    #   steps:
-    #     - name: Checkout repository
-    #       uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-    #     - name: Installing ansible and dependencies
-    #       run: |
-    #         sudo apt update
-    #         sudo apt install -y pipx python3-requests ssh
-    #         pipx install --include-deps --force ansible
-    #         pipx inject ansible requests 
-    #         pipx inject ansible kubernetes
-    #         pipx ensurepath
+        - name: Installing ansible and dependencies
+          run: |
+            sudo apt update
+            sudo apt install -y pipx python3-requests ssh
+            pipx install --include-deps --force ansible
+            pipx inject ansible requests 
+            pipx inject ansible kubernetes
+            pipx ensurepath
         
-    #     - name: Update PATH
-    #       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        - name: Update PATH
+          run: echo "$HOME/.local/bin" >> $GITHUB_PATH
   
-    #     - name: Set private Key file
-    #       working-directory: ./ansible
-    #       run: |
-    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+        - name: Set private Key file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-    #     - name: Deploy argocd
-    #       working-directory: ./ansible
-    #       run: |
-    #         ansible-galaxy collection install kubernetes.core
-    #         ansible-playbook deploy_argocd.yml
-    #       env:
-    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
+        - name: Deploy argocd
+          working-directory: ./ansible
+          run: |
+            ansible-galaxy collection install kubernetes.core
+            ansible-playbook deploy_argocd.yml
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
     
-    # Install_SealedSecrets:
-    #   name: Deploying Sealedsecrets
-    #   runs-on: self-hosted
-    #   needs: [Install_k8s]
+    Install_SealedSecrets:
+      name: Deploying Sealedsecrets
+      runs-on: self-hosted
+      needs: [Install_k8s]
       
-    #   steps:
-    #     - name: Checkout repository
-    #       uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-    #     - name: Settings sealedSecrets private key file
-    #       working-directory: ./ansible
-    #       run:
-    #         echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealedsecret_private.key
+        - name: Settings sealedSecrets private key file
+          working-directory: ./ansible
+          run:
+            echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealedsecret_private.key
 
-    #     - name: Installing ansible and dependencies
-    #       run: |
-    #         sudo apt update
-    #         sudo apt install -y pipx python3-requests ssh
-    #         pipx install --include-deps --force ansible
-    #         pipx inject ansible requests 
-    #         pipx inject ansible kubernetes
-    #         pipx ensurepath
+        - name: Installing ansible and dependencies
+          run: |
+            sudo apt update
+            sudo apt install -y pipx python3-requests ssh
+            pipx install --include-deps --force ansible
+            pipx inject ansible requests 
+            pipx inject ansible kubernetes
+            pipx ensurepath
         
-    #     - name: Update PATH
-    #       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        - name: Update PATH
+          run: echo "$HOME/.local/bin" >> $GITHUB_PATH
   
-    #     - name: Set private Key file
-    #       working-directory: ./ansible
-    #       run: |
-    #         echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
+        - name: Set private Key file
+          working-directory: ./ansible
+          run: |
+            echo '${{secrets.TERRAFORM_ALLOWED_KEY_PRIVATE}}' > ansible_private_key && chmod 700 ansible_private_key
         
-    #     - name: Deploy sealed secrets
-    #       working-directory: ./ansible
-    #       run: |
-    #         ansible-galaxy collection install kubernetes.core
-    #         ansible-playbook deploy_sealedsecrets.yml
-    #       env:
-    #         proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
-
-    #     - name: continue on fail
-    #       run:
-    #         sleep infinity
-    #       if: failure()
-    
+        - name: Deploy sealed secrets
+          working-directory: ./ansible
+          run: |
+            ansible-galaxy collection install kubernetes.core
+            ansible-playbook deploy_sealedsecrets.yml
+          env:
+            proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
         
               
