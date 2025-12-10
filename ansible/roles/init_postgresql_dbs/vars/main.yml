@@ -5,3 +5,6 @@ schemes:
   - name: mealie_db
     username: mealie
     password: "{{ mealie_password }}"
+  - name: authentik
+    username: authentik
+    password: "{{ authentik_password }}"
