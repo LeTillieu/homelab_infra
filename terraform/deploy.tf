@@ -71,7 +71,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
   disk {
     datastore_id = "vmstore"
-    import_from = "local:import/debian-12-genericcloud-amd64-20250210-2019.img"
+    file_id      = "local:iso/debian-12-genericcloud-amd64-20250210-2019.img"
     interface    = "scsi0"
     size         = 32
   }
@@ -120,7 +120,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
 
   disk {
     datastore_id = "vmstore"
-    import_from = "local:import/debian-12-genericcloud-amd64-20250210-2019.img"
+    file_id      = "iso/debian-12-genericcloud-amd64-20250210-2019.img"
     interface    = "scsi0"
     size         = 32
   }
@@ -167,7 +167,7 @@ resource "proxmox_virtual_environment_vm" "postgres-vm" {
 
   disk {
     datastore_id = "vmstore"
-    import_from = "local:import/debian-12-genericcloud-amd64-20250210-2019.img"
+    file_id      = "iso/debian-12-genericcloud-amd64-20250210-2019.img"
     interface    = "scsi0"
     size         = 32
   }
