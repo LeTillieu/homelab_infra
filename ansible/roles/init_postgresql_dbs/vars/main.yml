@@ -8,3 +8,6 @@ schemes:
   - name: authentik
     username: authentik
     password: "{{ authentik_password }}"
+  - name: zabbix
+    username: zabbix
+    password: "{{ zabbix_password }}"
