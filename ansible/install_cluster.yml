@@ -296,7 +296,7 @@
         - {"url": "https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml", "path": "/tmp/kube-flannel.yml"}
         - {"url": "https://raw.githubusercontent.com/longhorn/longhorn/v1.10.0/deploy/longhorn.yaml", "path": "/tmp/longhorn.yaml"}
         - {"url": "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml", "path": "/tmp/metrics-server.yaml"}
-        - {"url": "https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/", "path": "/tmp/metallb.yaml"}
+        - {"url": "https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml", "path": "/tmp/metallb.yaml"}
 
     - name: Apply manifests
       kubernetes.core.k8s:
