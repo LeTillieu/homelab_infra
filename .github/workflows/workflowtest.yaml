@@ -200,7 +200,7 @@ jobs:
         - name: Settings sealedSecrets private key file
           working-directory: ./ansible
           run:
-            echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealedsecret_private.key
+            echo "${{ secrets.KUBESEAL_PRIVATE_KEY }}" > ./sealed-secrets-key.yaml
 
         - name: Installing ansible and dependencies
           run: |
