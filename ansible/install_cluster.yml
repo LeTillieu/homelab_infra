@@ -282,7 +282,7 @@
     ansible_python_interpreter: /opt/ansible_venv/bin/python3
   tasks:
     - name: Configure cluster for metallb
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: |
           kubectl get configmap kube-proxy -n kube-system -o yaml | 
           sed -e "s/strictARP: false/strictARP: true/" | 
