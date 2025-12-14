@@ -1,5 +1,5 @@
 plugin: community.proxmox.proxmox
-url: https://10.13.13.2:8006
+url: https://10.13.13.3:8006
 user: terraform-prov@pve
 token_id: 'local_token'
 token_secret: "{{ lookup('env', 'proxmox_api_token') }}"
