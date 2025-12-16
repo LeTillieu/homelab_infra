@@ -35,6 +35,13 @@
     name: python3-psycopg2
     state: present
 
+- name: Restarting postgres
+  become: true
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+    enabled: true
+
 - name: Creating database
   become: true
   become_user: "postgres"
