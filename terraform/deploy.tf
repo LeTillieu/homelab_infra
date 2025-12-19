@@ -98,7 +98,7 @@ resource "proxmox_virtual_environment_vm" "k8s-ctrlplane_vm" {
 
 # Create nodes
 resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
-  count = 0
+  count = 1
   node_name = "proxmox"
   vm_id = 210+count.index
   name = "k8s-node-terraform-${count.index}"
@@ -110,12 +110,12 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
   keyboard_layout = "fr"
 
   cpu {
-    cores        = 5
+    cores        = 2
     type         = "x86-64-v2-AES"
   }
 
   memory {
-    dedicated = 5120
+    dedicated = 6144
   }
 
   disk {
