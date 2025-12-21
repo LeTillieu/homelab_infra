@@ -38,7 +38,6 @@ jobs:
             env: 
               TF_VAR_gcp_bucket_name: ${{vars.GPC_BUCKET_NAME}}
               TF_VAR_terraform_private_key: ${{secrets.TERRAFORM_PRIVATE_KEY}}
-              TF_VAR_proxmox_api_token: ${{secrets.PROXMOX_API_TOKEN}}
               TF_VAR_proxmox_ip: ${{secrets.PROXMOX_IP}}
               TF_VAR_proxmox_port: ${{secrets.PROXMOX_PORT}}
               TF_VAR_debian_url: ${{vars.DEBIAN_URL}}
@@ -46,6 +45,7 @@ jobs:
               TF_VAR_terraform_allowed_key_public: ${{secrets.TERRAFORM_ALLOWED_KEY_PUBLIC}}
               GOOGLE_APPLICATION_CREDENTIALS: "./gcloud-key.json"
               TF_VAR_k8s_cluster_network_prefix: ${{secrets.K8S_CLUSTER_NETWORK_PREFIX}}
+              TF_VAR_proxmox_root_password: ${{secrets.PROXMOX_ROOT_PASSWORD}}
           # TODO: uncomment 
           # - name: Sleep for 5 minutes
           #   run: sleep 300

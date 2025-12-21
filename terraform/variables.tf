@@ -4,8 +4,8 @@ variable "terraform_private_key" {
   sensitive   = true
 }
 
-variable "proxmox_api_token" {
-  description = "Token for proxmox API"
+variable "proxmox_root_password" {
+  description = "Proxmox root password"
   type        = string
   sensitive   = true
 }
