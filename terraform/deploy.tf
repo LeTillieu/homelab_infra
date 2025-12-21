@@ -14,9 +14,9 @@ terraform {
 provider "proxmox" {
   endpoint = "https://${var.proxmox_ip}:${var.proxmox_port}"
   insecure = true
-  api_token = "terraform-prov@pve!local_token=${var.proxmox_api_token}"
+  api_token = "root@pam!cicd_token=${var.proxmox_api_token}"
   ssh {
-    username = "terraform-prov"
+    username = "root"
     private_key = "${var.terraform_private_key}"
     node  {
       name = "proxmox"
@@ -130,6 +130,11 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
     bridge = "vmbr0"
   }
   serial_device {}
+
+  hostpci {
+    device = "hostpci0"
+    id = "0000:08:00.0"
+  }
 
   initialization {
     datastore_id = "local"
