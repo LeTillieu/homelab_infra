@@ -14,7 +14,7 @@ terraform {
 provider "proxmox" {
   endpoint = "https://${var.proxmox_ip}:${var.proxmox_port}"
   insecure = true
-  password= ${var.proxmox_root_password}
+  password = "${var.proxmox_root_password}"
   ssh {
     username = "root"
     private_key = "${var.terraform_private_key}"
