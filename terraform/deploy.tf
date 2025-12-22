@@ -123,7 +123,7 @@ resource "proxmox_virtual_environment_vm" "k8s-nodes_vm" {
     datastore_id = "vmstore"
     file_id      = "local:iso/debian-12-genericcloud-amd64-20250210-2019.img"
     interface    = "scsi0"
-    size         = 32
+    size         = 200
   }
 
   network_device {
