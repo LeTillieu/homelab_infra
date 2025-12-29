@@ -110,3 +110,4 @@
         - n8n.yaml
         - argocd_users.yaml
         - argocd_roles.yaml
+        - medias.yaml
