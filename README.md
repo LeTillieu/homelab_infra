@@ -7,7 +7,7 @@ L'objectif de ce repo est de mettre à disposition les ressource permettant la r
 | Nom | RAM (Go) | CPU cores | GPU | Disque(Go) | Utilisation |
 |---| --- | --- | --- | --- | --- |
 | Tour | 16 | 12 | ✔ |  | Serveur proxmox |
-| PC Omen {#pc_omen} | 8 | 4 | ❌ | 1000 | Node kubernetes |
+| PC Omen | 8 | 4 | ❌ | 1000 | Node kubernetes |
 | Raspbery pi 5 Model B 1.0 |  4 | 4 | ❌ | 32 | Infra générale |
 | NAS Synology | | | | 11000 | Stockage des backups
 
