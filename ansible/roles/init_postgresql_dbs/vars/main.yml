@@ -11,3 +11,6 @@ schemes:
   - name: zabbix
     username: zabbix
     password: "{{ zabbix_password }}"
+  - name: miniflux
+    username: miniflux
+    password: "{{ miniflux_password }}"

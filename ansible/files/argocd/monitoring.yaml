@@ -1,0 +1,63 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    automated:
+      enabled: false
+      prune: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: loki
+      targetRevision: 6.49.0
+      helm:
+        valueFiles:
+          - $github/monitoring/loki_values.yaml
+    
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: grafana
+      targetRevision: 10.5.8
+      helm:
+        valueFiles:
+          - $github/monitoring/grafana_values.yaml
+    
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: prometheus
+      targetRevision: 28.4.0
+      helm:
+        valueFiles:
+          - $github/monitoring/prometheus_values.yaml
+
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: alertmanager
+      targetRevision: 1.31.1
+      helm:
+        valueFiles:
+          - $github/monitoring/alertmanager_values.yaml
+    
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: alloy
+      targetRevision: 1.5.2
+      helm:
+        valueFiles:
+          - $github/monitoring/alloy_values.yaml
+
+    - repoURL: git@github.com:LeTillieu/homelab_apps.git
+      targetRevision: monitoring
+      path: monitoring/manifests
+      directory:
+        recurse: true
+
+    - repoURL: git@github.com:LeTillieu/homelab_apps.git
+      targetRevision: monitoring
+      ref: github
